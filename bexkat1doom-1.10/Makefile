@@ -6,9 +6,9 @@
 #
 CC=  bexkat1-elf-gcc  # gcc or g++
 
-CFLAGS=-g -Wall -DNORMALUNIX # -DUSEASM 
-LDFLAGS=-L/usr/X11R6/lib
-LIBS=-lXext -lX11 -lnsl -lm
+CFLAGS=-g -DNORMALUNIX # -DUSEASM 
+LDFLAGS=-specs=de2.specs
+LIBS=-lm
 
 # subdirectory for objects
 O=bexkat1
@@ -18,10 +18,10 @@ OBJS=				\
 		$(O)/doomdef.o		\
 		$(O)/doomstat.o		\
 		$(O)/dstrings.o		\
+		$(O)/i_sound.o \
+		$(O)/i_video.o \
+		$(O)/i_net.o \
 		$(O)/i_system.o		\
-		$(O)/i_sound.o		\
-		$(O)/i_video.o		\
-		$(O)/i_net.o			\
 		$(O)/tables.o			\
 		$(O)/f_finale.o		\
 		$(O)/f_wipe.o 		\

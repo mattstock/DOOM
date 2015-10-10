@@ -63,13 +63,7 @@ int			numlumps;
 
 void**			lumpcache;
 
-
-#define strcmpi	strcasecmp
-
-void strupr (char* s)
-{
-    while (*s) { *s = toupper(*s); s++; }
-}
+#define strcmpi strcasecmp
 
 int filelength (int handle) 
 { 
