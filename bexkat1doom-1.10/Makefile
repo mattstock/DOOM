@@ -4,14 +4,14 @@
 #
 # $Log:$
 #
-CC=  gcc  # gcc or g++
+CC=  bexkat1-elf-gcc  # gcc or g++
 
-CFLAGS=-g -Wall -DNORMALUNIX -DLINUX # -DUSEASM 
+CFLAGS=-g -Wall -DNORMALUNIX # -DUSEASM 
 LDFLAGS=-L/usr/X11R6/lib
 LIBS=-lXext -lX11 -lnsl -lm
 
 # subdirectory for objects
-O=linux
+O=bexkat1
 
 # not too sophisticated dependency
 OBJS=				\
@@ -77,15 +77,15 @@ OBJS=				\
 		$(O)/info.o				\
 		$(O)/sounds.o
 
-all:	 $(O)/linuxxdoom
+all:	 $(O)/bexkat1doom
 
 clean:
 	rm -f *.o *~ *.flc
-	rm -f linux/*
+	rm -f bexkat1/*
 
-$(O)/linuxxdoom:	$(OBJS) $(O)/i_main.o
+$(O)/bexkat1doom:	$(OBJS) $(O)/i_main.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(O)/i_main.o \
-	-o $(O)/linuxxdoom $(LIBS)
+	-o $(O)/bexkat1doom $(LIBS)
 
 $(O)/%.o:	%.c
 	$(CC) $(CFLAGS) -c $< -o $@
