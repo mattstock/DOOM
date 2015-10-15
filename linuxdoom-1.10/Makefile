@@ -6,8 +6,8 @@
 #
 CC=  gcc  # gcc or g++
 
-CFLAGS=-g -Wall -DNORMALUNIX -DLINUX # -DUSEASM 
-LDFLAGS=-L/usr/X11R6/lib
+CFLAGS=-g -m32 -Wall -DNORMALUNIX -DLINUX # -DUSEASM 
+LDFLAGS=-L/usr/lib/i386-linux-gnu
 LIBS=-lXext -lX11 -lnsl -lm
 
 # subdirectory for objects
@@ -84,8 +84,8 @@ clean:
 	rm -f linux/*
 
 $(O)/linuxxdoom:	$(OBJS) $(O)/i_main.o
-	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(O)/i_main.o \
-	-o $(O)/linuxxdoom $(LIBS)
+	$(CC) $(CFLAGS) $(OBJS) $(O)/i_main.o \
+	-o $(O)/linuxxdoom $(LDFLAGS) $(LIBS)
 
 $(O)/%.o:	%.c
 	$(CC) $(CFLAGS) -c $< -o $@
