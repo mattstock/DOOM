@@ -54,7 +54,7 @@ int		X_height;
 // replace each 320x200 pixel with multiply*multiply pixels.
 // According to Dave Taylor, it still is a bonehead thing
 // to use ....
-static int	multiply=1;
+static int	multiply=2;
 
 
 //
@@ -177,25 +177,6 @@ void I_UpdateNoBlit (void)
 //
 void I_FinishUpdate (void)
 {
-
-    static int	lasttic;
-    int		tics;
-    int		i;
-    // UNUSED static unsigned char *bigscreen=0;
-
-    // draws little dots on the bottom of the screen
-    if (devparm)
-    {
-	i = I_GetTime();
-	tics = i - lasttic;
-	lasttic = i;
-	if (tics > 20) tics = 20;
-
-	for (i=0 ; i<tics*2 ; i+=2)
-	    screens[0][ (SCREENHEIGHT-1)*SCREENWIDTH + i] = 0xff;
-	for ( ; i<20*2 ; i+=2)
-	    screens[0][ (SCREENHEIGHT-1)*SCREENWIDTH + i] = 0x0;
-    }
 }
 
 

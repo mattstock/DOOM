@@ -99,7 +99,7 @@ boolean         fastparm;	// checkparm of -fast
 
 boolean         drone;
 
-boolean		singletics = false; // debug flag to cancel adaptiveness
+boolean		singletics = true; // debug flag to cancel adaptiveness
 
 
 
@@ -368,6 +368,7 @@ void D_DoomLoop (void)
 
     while (1)
     {
+      printf("In DoomLoop %d, %d\n", gametic, maketic);
 	// frame syncronous IO operations
 	I_StartFrame ();                
 	
