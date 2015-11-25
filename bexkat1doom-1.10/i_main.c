@@ -36,8 +36,8 @@ main
 ( int		argc,
   char**	argv ) 
 { 
-    myargc = argc; 
-    myargv = argv; 
+    myargc = 0; 
+    myargv = NULL; 
  
     D_DoomMain (); 
 

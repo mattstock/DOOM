@@ -563,7 +563,7 @@ void D_CheckNetGame (void)
 	remoteresend[i] = false;	// set when local needs tics
 	resendto[i] = 0;		// which tic to start sending
     }
-	
+/*	
     // I_InitNetwork sets doomcom and netgame
     I_InitNetwork ();
     if (doomcom->id != DOOMCOM_ID)
@@ -590,7 +590,7 @@ void D_CheckNetGame (void)
 	
     printf ("player %i of %i (%i nodes)\n",
 	    consoleplayer+1, doomcom->numplayers, doomcom->numnodes);
-
+*/
 }
 
 

@@ -353,6 +353,7 @@ void M_LoadDefaults (void)
     for (i=0 ; i<numdefaults ; i++)
 	*defaults[i].location = defaults[i].defaultvalue;
     
+    return;
     // check for a custom default file
     i = M_CheckParm ("-config");
     if (i && i<myargc-1)

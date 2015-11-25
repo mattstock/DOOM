@@ -577,7 +577,7 @@ void IdentifyVersion (void)
     char *doomwaddir;
     doomwaddir = getenv("DOOMWADDIR");
     if (!doomwaddir)
-	doomwaddir = ".";
+	doomwaddir = "";
 
     // Commercial.
     doom2wad = malloc(strlen(doomwaddir)+1+9+1);
@@ -608,24 +608,10 @@ void IdentifyVersion (void)
     doom2fwad = malloc(strlen(doomwaddir)+1+10+1);
     sprintf(doom2fwad, "%s/doom2f.wad", doomwaddir);
 
-    home = getenv("HOME");
-    if (!home)
-      I_Error("Please set $HOME to your home directory");
-    sprintf(basedefault, "%s/.doomrc", home);
+    sprintf(basedefault, "/.doomrc");
 #endif
 
-    if (M_CheckParm ("-shdev"))
-    {
-	gamemode = shareware;
-	devparm = true;
-	D_AddFile (DEVDATA"doom1.wad");
-	D_AddFile (DEVMAPS"data_se/texture1.lmp");
-	D_AddFile (DEVMAPS"data_se/pnames.lmp");
-	strcpy (basedefault,DEVDATA"default.cfg");
-	return;
-    }
-
-    if (M_CheckParm ("-regdev"))
+/*    if (M_CheckParm ("-regdev"))
     {
 	gamemode = registered;
 	devparm = true;
@@ -641,13 +627,7 @@ void IdentifyVersion (void)
     {
 	gamemode = commercial;
 	devparm = true;
-	/* I don't bother
-	if(plutonia)
-	    D_AddFile (DEVDATA"plutonia.wad");
-	else if(tnt)
-	    D_AddFile (DEVDATA"tnt.wad");
-	else*/
-	    D_AddFile (DEVDATA"doom2.wad");
+	D_AddFile (DEVDATA"doom2.wad");
 	    
 	D_AddFile (DEVMAPS"cdata/texture1.lmp");
 	D_AddFile (DEVMAPS"cdata/pnames.lmp");
@@ -695,11 +675,13 @@ void IdentifyVersion (void)
     }
 
     if ( !access (doomwad,R_OK) )
-    {
-      gamemode = registered;
-      D_AddFile (doomwad);
-      return;
-    }
+    { 
+*/
+    gamemode = registered;
+    D_AddFile (doomwad);
+    printf("registered works\n");
+    return;
+/*    }
 
     if ( !access (doom1wad,R_OK) )
     {
@@ -714,6 +696,7 @@ void IdentifyVersion (void)
     // We don't abort. Let's see what the PWAD contains.
     //exit(1);
     //I_Error ("Game mode indeterminate\n");
+*/
 }
 
 //

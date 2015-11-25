@@ -6,7 +6,7 @@
 #
 CC=  bexkat1-elf-gcc  # gcc or g++
 
-CFLAGS=-g -Wall -DNORMALUNIX # -DUSEASM 
+CFLAGS=-g -Wall -D__BIG_ENDIAN__ -DNORMALUNIX # -DUSEASM 
 LDFLAGS=-specs=de2.specs
 LIBS=-lm
 
