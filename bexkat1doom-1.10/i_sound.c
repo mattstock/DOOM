@@ -35,10 +35,6 @@ rcsid[] = "$Id: i_unix.c,v 1.5 1997/02/03 22:45:10 b1 Exp $";
 
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
-
-// Linux voxware output.
-#include <linux/soundcard.h>
 
 // Timer stuff. Experimental.
 #include <time.h>
@@ -158,18 +154,7 @@ myioctl
   int	command,
   int*	arg )
 {   
-    int		rc;
-    extern int	errno;
-    
-    rc = ioctl(fd, command, arg);  
-    if (rc < 0)
-    {
-	fprintf(stderr, "ioctl(dsp,%d,arg) failed\n", command);
-	fprintf(stderr, "errno=%d\n", errno);
-	exit(-1);
-    }
 }
-
 
 
 
@@ -734,7 +719,7 @@ void
 I_InitSound()
 { 
 #ifdef SNDSERV
-  char buffer[256];
+  /*  char buffer[256];
   
   if (getenv("DOOMWADDIR"))
     sprintf(buffer, "%s/%s",
@@ -750,7 +735,7 @@ I_InitSound()
     sndserver = popen(buffer, "w");
   }
   else
-    fprintf(stderr, "Could not start sound server [%s]\n", buffer);
+  fprintf(stderr, "Could not start sound server [%s]\n", buffer); */
 #else
     
   int i;
@@ -907,8 +892,6 @@ int I_QrySongPlaying(int handle)
 // There are issues with profiling as well.
 static int /*__itimer_which*/  itimer = ITIMER_REAL;
 
-static int sig = SIGALRM;
-
 // Interrupt handler.
 void I_HandleSoundTimer( int ignore )
 {
@@ -949,20 +932,14 @@ int I_SoundSetTimer( int duration_of_tick )
   
   // Now we have to change this attribute for repeated calls.
   act.sa_handler = I_HandleSoundTimer;
-#ifndef sun    
-  //ac	t.sa_mask = _sig;
-#endif
-  act.sa_flags = SA_RESTART;
   
-  sigaction( sig, &act, &oact );
-
   value.it_interval.tv_sec    = 0;
   value.it_interval.tv_usec   = duration_of_tick;
   value.it_value.tv_sec       = 0;
   value.it_value.tv_usec      = duration_of_tick;
 
   // Error is -1.
-  res = setitimer( itimer, &value, &ovalue );
+  //  res = setitimer( itimer, &value, &ovalue );
 
   // Debug.
   if ( res == -1 )

@@ -66,11 +66,6 @@ void**			lumpcache;
 
 #define strcmpi	strcasecmp
 
-void strupr (char* s)
-{
-    while (*s) { *s = toupper(*s); s++; }
-}
-
 int filelength (int handle) 
 { 
     struct stat	fileinfo;

@@ -7,8 +7,8 @@
 CC=  bexkat1-elf-gcc  # gcc or g++
 
 CFLAGS=-g -Wall -DNORMALUNIX # -DUSEASM 
-LDFLAGS=-L/usr/X11R6/lib
-LIBS=-lXext -lX11 -lnsl -lm
+LDFLAGS=-specs=de2.specs
+LIBS=-lm
 
 # subdirectory for objects
 O=bexkat1
