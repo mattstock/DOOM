@@ -574,7 +574,6 @@ void IdentifyVersion (void)
     char*	tntwad;
 
 #ifdef NORMALUNIX
-    char *home;
     char *doomwaddir;
     doomwaddir = getenv("DOOMWADDIR");
     if (!doomwaddir)
@@ -669,20 +668,19 @@ void IdentifyVersion (void)
     }
 
     if ( !access (doomuwad,R_OK) )
-    {
+    { */
       gamemode = retail;
-      D_AddFile (doomuwad);
+      D_AddFile (doomwad);
       return;
-    }
+      /*    }
 
     if ( !access (doomwad,R_OK) )
     { 
-*/
     gamemode = registered;
     D_AddFile (doomwad);
     printf("registered works\n");
     return;
-/*    }
+    }
 
     if ( !access (doom1wad,R_OK) )
     {

@@ -161,7 +161,6 @@ void W_AddFile (char *filename)
 	return;
     }
 
-    printf (" adding %s %d\n",filename, handle);
     startlump = numlumps;
 	
     if (strcmpi (filename+strlen(filename)-3 , "wad" ) )
@@ -176,7 +175,7 @@ void W_AddFile (char *filename)
     else 
     {
 	// WAD file
-	int i = read (handle, &header, sizeof(header));
+	read (handle, &header, sizeof(header));
 	if (strncmp(header.identification,"IWAD",4))
 	{
 	    // Homebrew levels?
@@ -190,14 +189,11 @@ void W_AddFile (char *filename)
 	}
 	header.numlumps = LONG(header.numlumps);
 	header.infotableofs = LONG(header.infotableofs);
-        printf("num lumps = %d (%d), info offset = %d\n", header.numlumps, sizeof(filelump_t), header.infotableofs);
 	length = header.numlumps*sizeof(filelump_t);
-        printf("length of WAD is %d\n", length);
 	fileinfo = alloca (length);
 	lseek (handle, header.infotableofs, SEEK_SET);
 	read (handle, fileinfo, length);
 	numlumps += header.numlumps;
-        printf("numlumps = %d\n", numlumps);
     }
 
     
@@ -221,7 +217,6 @@ void W_AddFile (char *filename)
 	
     if (reloadname)
 	close (handle);
-    printf("done with WAD\n");
 }
 
 

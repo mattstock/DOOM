@@ -194,13 +194,14 @@ void I_ReadScreen (byte* scr)
 void UploadNewPalette(byte *palette)
 {
   int i;
+  unsigned val;
 
-  // set the X colormap entries
   for (i=0 ; i<256 ; i++)
     {
-      vga_palette[i] = (gammatable[usegamma][*palette++] << 16);
-      vga_palette[i] |= (gammatable[usegamma][*palette++] << 8);
-      vga_palette[i] |= gammatable[usegamma][*palette++];
+      val = (*palette++) << 16;
+      val |= (*palette++) << 8;
+      val |= (*palette++);
+      vga_palette[i] = val;
     }
 }
 
@@ -209,6 +210,7 @@ void UploadNewPalette(byte *palette)
 //
 void I_SetPalette (byte* palette)
 {
+    printf("Changing the palette\n");
     UploadNewPalette(palette);
 }
 
