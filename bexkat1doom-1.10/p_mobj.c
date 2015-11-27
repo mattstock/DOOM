@@ -650,10 +650,16 @@ void P_SpawnPlayer (mapthing_t* mthing)
 
     int			i;
 
+    printf("P_SpawnPlayer\n");
+
+    printf("mthing = %08x\n", mthing);
+    printf("mthing->type = %d\n", mthing->type);
+    printf("players[0] = %08x\n", players[0]);		
+
     // not playing?
     if (!playeringame[mthing->type-1])
 	return;					
-		
+
     p = &players[mthing->type-1];
 
     if (p->playerstate == PST_REBORN)

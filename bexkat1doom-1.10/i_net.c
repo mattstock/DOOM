@@ -27,11 +27,29 @@ rcsid[] = "$Id: m_bbox.c,v 1.1 1997/02/03 22:45:10 b1 Exp $";
 #include <string.h>
 #include <stdio.h>
 
+#include <unistd.h>
+#include "i_system.h"
+#include "d_event.h"
+#include "d_net.h"
+
+#include "doomstat.h"
+#include "i_net.h"
+
 //
 // I_InitNetwork
 //
 void I_InitNetwork (void)
 {
+  doomcom = malloc(sizeof(*doomcom));
+  memset(doomcom, 0, sizeof(*doomcom));
+  doomcom->ticdup = 1;
+  doomcom->extratics = 0;
+  netgame = false;
+  doomcom->id = DOOMCOM_ID;
+  doomcom->numplayers = doomcom->numnodes = 1;
+  doomcom->deathmatch = false;
+  doomcom->consoleplayer = 0;
+  return;
 }
 
 void I_NetCmd (void)

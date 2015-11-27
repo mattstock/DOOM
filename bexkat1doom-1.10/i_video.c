@@ -39,13 +39,13 @@ rcsid[] = "$Id: i_x.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 #include "v_video.h"
 #include "m_argv.h"
 #include "d_main.h"
+#include "spi.h"
 
 #include "doomdef.h"
 
-#define POINTER_WARP_COUNTDOWN	1
-
-unsigned char *vga = (unsigned char *)0xc0000000;
-unsigned int *vga_palette = (unsigned int *)0xc0400000;
+static unsigned char *vga = (unsigned char *)0xc0000000;
+static unsigned int *vga_palette = (unsigned int *)0xc0400000;
+static unsigned int *sw = (unsigned int *)0x20000810;
 
 int		X_width;
 int		X_height;
@@ -56,83 +56,9 @@ int		X_height;
 // to use ....
 static int	multiply=2;
 
-
-//
-//  Translates the key currently in X_event
-//
-/*
-int xlatekey(void)
-{
-
-    int rc;
-
-    switch(rc = XKeycodeToKeysym(X_display, X_event.xkey.keycode, 0))
-    {
-      case XK_Left:	rc = KEY_LEFTARROW;	break;
-      case XK_Right:	rc = KEY_RIGHTARROW;	break;
-      case XK_Down:	rc = KEY_DOWNARROW;	break;
-      case XK_Up:	rc = KEY_UPARROW;	break;
-      case XK_Escape:	rc = KEY_ESCAPE;	break;
-      case XK_Return:	rc = KEY_ENTER;		break;
-      case XK_Tab:	rc = KEY_TAB;		break;
-      case XK_F1:	rc = KEY_F1;		break;
-      case XK_F2:	rc = KEY_F2;		break;
-      case XK_F3:	rc = KEY_F3;		break;
-      case XK_F4:	rc = KEY_F4;		break;
-      case XK_F5:	rc = KEY_F5;		break;
-      case XK_F6:	rc = KEY_F6;		break;
-      case XK_F7:	rc = KEY_F7;		break;
-      case XK_F8:	rc = KEY_F8;		break;
-      case XK_F9:	rc = KEY_F9;		break;
-      case XK_F10:	rc = KEY_F10;		break;
-      case XK_F11:	rc = KEY_F11;		break;
-      case XK_F12:	rc = KEY_F12;		break;
-	
-      case XK_BackSpace:
-      case XK_Delete:	rc = KEY_BACKSPACE;	break;
-
-      case XK_Pause:	rc = KEY_PAUSE;		break;
-
-      case XK_KP_Equal:
-      case XK_equal:	rc = KEY_EQUALS;	break;
-
-      case XK_KP_Subtract:
-      case XK_minus:	rc = KEY_MINUS;		break;
-
-      case XK_Shift_L:
-      case XK_Shift_R:
-	rc = KEY_RSHIFT;
-	break;
-	
-      case XK_Control_L:
-      case XK_Control_R:
-	rc = KEY_RCTRL;
-	break;
-	
-      case XK_Alt_L:
-      case XK_Meta_L:
-      case XK_Alt_R:
-      case XK_Meta_R:
-	rc = KEY_RALT;
-	break;
-	
-      default:
-	if (rc >= XK_space && rc <= XK_asciitilde)
-	    rc = rc - XK_space + ' ';
-	if (rc >= 'A' && rc <= 'Z')
-	    rc = rc - 'A' + 'a';
-	break;
-    }
-
-    return rc;
-
-}
-*/
 void I_ShutdownGraphics(void)
 {
 }
-
-
 
 //
 // I_StartFrame
@@ -144,15 +70,66 @@ void I_StartFrame (void)
 boolean		mousemoved = false;
 boolean		shmFinished;
 
+unsigned short joy_x, joy_y;
+
+//  Eventually need to have this run every few tics or similar
+void PollJoystick() {
+  unsigned char a0,a1;
+
+  spi_slow();
+  CLEAR_BIT(SPI_CTL, JOY_SEL);
+  a0 = spi_xfer(0x78);
+  a1 = spi_xfer(0x00);
+  SET_BIT(SPI_CTL, JOY_SEL);
+  joy_y = ((a0 << 8) | a1) & 0x3ff;
+  CLEAR_BIT(SPI_CTL, JOY_SEL);
+  a0 = spi_xfer(0x68);
+  a1 = spi_xfer(0x00);
+  SET_BIT(SPI_CTL, JOY_SEL);
+  joy_x = ((a0 << 8) | a1) & 0x3ff;
+  spi_fast();
+}
+
+static unsigned char kbd[] = {
+  KEY_ENTER,
+  KEY_RIGHTARROW,
+  KEY_UPARROW,
+  KEY_LEFTARROW
+};
+
 void I_GetEvent(void)
 {
 
   event_t event;
-  // implement simple keyboard
-  // poll events for joystick for mouse events
-  // and keyboard
-  // store in event structure
-  // push to D_PostEvent()
+  static unsigned int k = 0;
+  unsigned int kn;
+  int i;
+
+  kn = (sw[0] >> 16) & 0xf;
+  if (k != kn) {
+    unsigned int a,b;
+    a = k;
+    b = kn;
+    for (i=0; i < 4; i++) {
+      if (((a&1) == 0) && ((b&1) == 1)) {
+	event.type = ev_keydown;
+	event.data1 = kbd[i];
+	D_PostEvent(&event);
+	printf("keydown\n");
+      }
+      if (((a&1) == 1) && ((b&1) == 0)) {
+	event.type = ev_keyup;
+	event.data1 = kbd[i];
+	D_PostEvent(&event);
+	printf("keyup\n");
+      }
+      a >>= 1;
+      b >>= 1;
+    }
+    k = kn;
+  }
+
+  // still need to sort out "mouse"
 }
 
 //
@@ -177,6 +154,7 @@ void I_UpdateNoBlit (void)
 //
 void I_FinishUpdate (void)
 {
+  memcpy (vga, screens[0], SCREENWIDTH*SCREENHEIGHT);
 }
 
 
@@ -255,7 +233,7 @@ void I_InitGraphics(void)
 	    I_Error("bad -geom parameter");
     }
 
-    screens[0] = vga;
+    screens[0] = (unsigned char *)malloc(SCREENWIDTH*SCREENHEIGHT);
 }
 
 

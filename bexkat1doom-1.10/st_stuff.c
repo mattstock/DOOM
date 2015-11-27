@@ -1251,9 +1251,13 @@ void ST_initData(void)
 
     int		i;
 
+    printf("ST_initData: Starting.\n");
+
     st_firsttime = true;
     plyr = &players[consoleplayer];
 
+    printf("Consoleplayer = %d\n", consoleplayer);
+    
     st_clock = 0;
     st_chatstate = StartChatState;
     st_gamestate = FirstPersonState;

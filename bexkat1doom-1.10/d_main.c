@@ -99,7 +99,7 @@ boolean         fastparm;	// checkparm of -fast
 
 boolean         drone;
 
-boolean		singletics = true; // debug flag to cancel adaptiveness
+boolean		singletics = false; // debug flag to cancel adaptiveness
 
 
 
@@ -206,6 +206,7 @@ void D_Display (void)
     boolean			wipe;
     boolean			redrawsbar;
 
+    printf("D_Display\n");
     if (nodrawers)
 	return;                    // for comparative timing / profiling
 		
@@ -263,6 +264,8 @@ void D_Display (void)
     // draw buffered stuff to screen
     I_UpdateNoBlit ();
     
+    printf("D_Display: gamestate = %d, gametic = %d\n", gamestate, gametic);
+
     // draw the view directly
     if (gamestate == GS_LEVEL && !automapactive && gametic)
 	R_RenderPlayerView (&players[displayplayer]);
@@ -390,11 +393,11 @@ void D_DoomLoop (void)
 	    TryRunTics (); // will run at least one tic
 	}
 		
-	S_UpdateSounds (players[consoleplayer].mo);// move positional sounds
+	//	S_UpdateSounds (players[consoleplayer].mo);// move positional sounds
 
 	// Update display, next frame, with current state.
 	D_Display ();
-
+	/*
 #ifndef SNDSERV
 	// Sound mixing for the buffer is snychronous.
 	I_UpdateSound();
@@ -403,7 +406,7 @@ void D_DoomLoop (void)
 #ifndef SNDINTR
 	// Update sound output.
 	I_SubmitSound();
-#endif
+	#endif*/
     }
 }
 
@@ -1139,6 +1142,8 @@ void D_DoomMain (void)
 	G_LoadGame (file);
     }
 	
+    // for testing, go right into the game
+    G_InitNew(sk_easy, 1, 1);
 
     if ( gameaction != ga_loadgame )
     {
