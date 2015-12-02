@@ -139,11 +139,11 @@ M_WriteFile
 int
 M_ReadFile
 ( char const*	name,
-  byte**	buffer )
+  char**	buffer )
 {
     int	handle, count, length;
     struct stat	fileinfo;
-    byte		*buf;
+    char		*buf;
 	
     handle = open (name, O_RDONLY | O_BINARY, 0666);
     if (handle == -1)

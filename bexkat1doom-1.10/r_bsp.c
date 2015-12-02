@@ -554,7 +554,6 @@ void R_RenderBSPNode (int bspnum)
     node_t*	bsp;
     int		side;
 
-    printf("R_RenderBSPNode(%d)\n", bspnum);
     // Found a subsector?
     if (bspnum & NF_SUBSECTOR)
     {

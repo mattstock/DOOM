@@ -34,9 +34,7 @@ rcsid[] = "$Id: m_bbox.c,v 1.1 1997/02/03 22:45:10 b1 Exp $";
 #pragma implementation "m_fixed.h"
 #endif
 #include "m_fixed.h"
-
-
-
+#include <math.h>
 
 // Fixme. __USE_C_FIXED__ or something.
 
@@ -45,7 +43,7 @@ FixedMul
 ( fixed_t	a,
   fixed_t	b )
 {
-    return ((long long) a * (long long) b) >> FRACBITS;
+  return ((long long) a * (long long) b) >> FRACBITS;
 }
 
 
@@ -71,11 +69,11 @@ FixedDiv2
 ( fixed_t	a,
   fixed_t	b )
 {
-#if 0
+#if 1
     long long c;
     c = ((long long)a<<16) / ((long long)b);
     return (fixed_t) c;
-#endif
+#else
 
     double c;
 
@@ -84,4 +82,5 @@ FixedDiv2
     if (c >= 2147483648.0 || c < -2147483648.0)
 	I_Error("FixedDiv: divide by zero");
     return (fixed_t) c;
+#endif
 }

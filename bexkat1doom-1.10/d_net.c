@@ -417,7 +417,6 @@ void NetUpdate (void)
     for (i=0 ; i<doomcom->numnodes ; i++)
 	if (nodeingame[i])
 	{
-	  printf("NetUpdate sending commands?\n");
 	    netbuffer->starttic = realstart = resendto[i];
 	    netbuffer->numtics = maketic - realstart;
 	    if (netbuffer->numtics > BACKUPTICS)

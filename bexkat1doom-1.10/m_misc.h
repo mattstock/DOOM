@@ -40,7 +40,7 @@ M_WriteFile
 int
 M_ReadFile
 ( char const*	name,
-  byte**	buffer );
+  char**	buffer );
 
 void M_ScreenShot (void);
 

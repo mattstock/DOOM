@@ -674,6 +674,7 @@ void IdentifyVersion (void)
     { */
       gamemode = retail;
       D_AddFile (doomwad);
+      //      D_AddFile ("/stock.wad");
       return;
       /*    }
 
@@ -1142,9 +1143,6 @@ void D_DoomMain (void)
 	G_LoadGame (file);
     }
 	
-    // for testing, go right into the game
-    G_InitNew(sk_easy, 1, 1);
-
     if ( gameaction != ga_loadgame )
     {
 	if (autostart || netgame)
@@ -1153,6 +1151,5 @@ void D_DoomMain (void)
 	    D_StartTitle ();                // start up intro loop
 
     }
-
     D_DoomLoop ();  // never returns
 }

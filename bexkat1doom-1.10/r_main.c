@@ -625,7 +625,7 @@ void R_InitLightTables (void)
     {
 	startmap = ((LIGHTLEVELS-1-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
 	for (j=0 ; j<MAXLIGHTZ ; j++)
-	{
+	  {
 	    scale = FixedDiv ((SCREENWIDTH/2*FRACUNIT), (j+1)<<LIGHTZSHIFT);
 	    scale >>= LIGHTSCALESHIFT;
 	    level = startmap - scale/DISTMAP;
@@ -699,6 +699,8 @@ void R_ExecuteSetViewSize (void)
     centeryfrac = centery<<FRACBITS;
     projection = centerxfrac;
 
+    printf("center = (%16x, %16x), centerfrac = (%16x, %16x)\n",
+	   centerx, centery, centerxfrac, centeryfrac);
     if (!detailshift)
     {
 	colfunc = basecolfunc = R_DrawColumn;
@@ -778,11 +780,11 @@ void R_Init (void)
     printf ("\nR_InitPointToAngle");
     R_InitTables ();
     // viewwidth / viewheight / detailLevel are set by the defaults
-    printf ("\nR_InitTables");
+    printf ("\nR_InitTables\n");
 
     R_SetViewSize (screenblocks, detailLevel);
     R_InitPlanes ();
-    printf ("\nR_InitPlanes");
+    printf ("\nR_InitPlanes\n");
     R_InitLightTables ();
     printf ("\nR_InitLightTables");
     R_InitSkyMap ();
@@ -881,12 +883,12 @@ void R_RenderPlayerView (player_t* player)
     NetUpdate ();
 
     // The head node is the last node output.
-    //R_RenderBSPNode (numnodes-1);
+    R_RenderBSPNode (numnodes-1);
     
     // Check for new console commands.
     NetUpdate ();
     
-    //    R_DrawPlanes ();
+    R_DrawPlanes ();
     
     // Check for new console commands.
     NetUpdate ();

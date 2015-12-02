@@ -35,7 +35,7 @@ enum { VERSION =  110 };
 
 // Game mode handling - identify IWAD version
 //  to handle IWAD dependend animations etc.
-typedef enum
+typedef enum gamemode_e
 {
   shareware,	// DOOM 1 shareware, E1, M9
   registered,	// DOOM 1 registered, E3, M27
@@ -48,7 +48,7 @@ typedef enum
 
 
 // Mission packs - might be useful for TC stuff?
-typedef enum
+typedef enum gamemission_e
 {
   doom,		// DOOM 1
   doom2,	// DOOM 2
