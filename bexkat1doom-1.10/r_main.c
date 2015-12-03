@@ -881,14 +881,17 @@ void R_RenderPlayerView (player_t* player)
     
     // check for new console commands.
     NetUpdate ();
-
+    printf("R_RenderBSPNode start\n");
     // The head node is the last node output.
     R_RenderBSPNode (numnodes-1);
+    printf("    R_RenderBSPNode complete\n");
     
     // Check for new console commands.
     NetUpdate ();
-    
+
+    printf("R_DrawPlanes start\n");    
     R_DrawPlanes ();
+    printf("  R_DrawPlanes complete\n");
     
     // Check for new console commands.
     NetUpdate ();

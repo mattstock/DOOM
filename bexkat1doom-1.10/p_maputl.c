@@ -145,6 +145,10 @@ P_BoxOnLineSide
 	p1 = P_PointOnLineSide (tmbox[BOXRIGHT], tmbox[BOXTOP], ld);
 	p2 = P_PointOnLineSide (tmbox[BOXLEFT], tmbox[BOXBOTTOM], ld);
 	break;
+      default:
+        p1 = 0;
+        p2 = 0;
+        break;
     }
 
     if (p1 == p2)

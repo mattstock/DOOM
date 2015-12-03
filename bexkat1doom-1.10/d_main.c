@@ -262,10 +262,10 @@ void D_Display (void)
     }
     
     // draw buffered stuff to screen
+    printf("I_UpdateNoBlit start\n");
     I_UpdateNoBlit ();
+    printf("  I_UpdateNoBlit complete\n");
     
-    printf("D_Display: gamestate = %d, gametic = %d\n", gamestate, gametic);
-
     // draw the view directly
     if (gamestate == GS_LEVEL && !automapactive && gametic)
 	R_RenderPlayerView (&players[displayplayer]);
@@ -371,26 +371,25 @@ void D_DoomLoop (void)
 
     while (1)
     {
-      printf("In DoomLoop %d, %d\n", gametic, maketic);
-	// frame syncronous IO operations
-	I_StartFrame ();                
-	
-	// process one or more tics
-	if (singletics)
+      // frame syncronous IO operations
+      I_StartFrame ();                
+
+      // process one or more tics
+      if (singletics)
 	{
-	    I_StartTic ();
-	    D_ProcessEvents ();
-	    G_BuildTiccmd (&netcmds[consoleplayer][maketic%BACKUPTICS]);
-	    if (advancedemo)
-		D_DoAdvanceDemo ();
-	    M_Ticker ();
-	    G_Ticker ();
-	    gametic++;
-	    maketic++;
+	  I_StartTic ();
+	  D_ProcessEvents ();
+	  G_BuildTiccmd (&netcmds[consoleplayer][maketic%BACKUPTICS]);
+	  if (advancedemo)
+	    D_DoAdvanceDemo ();
+	  M_Ticker ();
+	  G_Ticker ();
+	  gametic++;
+	  maketic++;
 	}
-	else
+      else
 	{
-	    TryRunTics (); // will run at least one tic
+	  TryRunTics (); // will run at least one tic
 	}
 		
 	//	S_UpdateSounds (players[consoleplayer].mo);// move positional sounds

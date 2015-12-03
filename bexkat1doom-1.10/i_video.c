@@ -91,10 +91,14 @@ void PollJoystick() {
 }
 
 static unsigned char kbd[] = {
-  KEY_ENTER,
+  KEY_LEFTARROW,
   KEY_RIGHTARROW,
+  KEY_DOWNARROW,
   KEY_UPARROW,
-  KEY_LEFTARROW
+  KEY_ENTER,
+  KEY_RCTRL,
+  ' ',
+  KEY_ESCAPE
 };
 
 void I_GetEvent(void)
@@ -102,8 +106,45 @@ void I_GetEvent(void)
 
   event_t event;
   static unsigned int k = 0;
-  unsigned int kn;
+  static unsigned int j = 0;
+  unsigned int kn, jn;
+  
   int i;
+
+  PollJoystick();
+
+  jn = 0;
+  if (joy_x < 400)
+    jn = 0x0001;
+  if (joy_x > 650)
+    jn = 0x0002;
+  if (joy_y < 400)
+    jn |= 0x0004;
+  if (joy_y > 650)
+    jn |= 0x0008;
+
+  if (j != jn) {
+    unsigned int a,b;
+    a = j;
+    b = jn;
+    for (i=0; i < 4; i++) {
+      if (((a&1) == 0) && ((b&1) == 1)) {
+	event.type = ev_keydown;
+	event.data1 = kbd[i];
+	D_PostEvent(&event);
+	printf("joy keydown\n");
+      }
+      if (((a&1) == 1) && ((b&1) == 0)) {
+	event.type = ev_keyup;
+	event.data1 = kbd[i];
+	D_PostEvent(&event);
+	printf("joy keyup\n");
+      }
+      a >>= 1;
+      b >>= 1;
+    }
+    j = jn;
+  }
 
   kn = (sw[0] >> 16) & 0xf;
   if (k != kn) {
@@ -113,13 +154,13 @@ void I_GetEvent(void)
     for (i=0; i < 4; i++) {
       if (((a&1) == 0) && ((b&1) == 1)) {
 	event.type = ev_keydown;
-	event.data1 = kbd[i];
+	event.data1 = kbd[i+4];
 	D_PostEvent(&event);
 	printf("keydown\n");
       }
       if (((a&1) == 1) && ((b&1) == 0)) {
 	event.type = ev_keyup;
-	event.data1 = kbd[i];
+	event.data1 = kbd[i+4];
 	D_PostEvent(&event);
 	printf("keyup\n");
       }
@@ -128,8 +169,6 @@ void I_GetEvent(void)
     }
     k = kn;
   }
-
-  // still need to sort out "mouse"
 }
 
 //

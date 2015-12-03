@@ -817,6 +817,7 @@ void R_SortVisSprites (void)
     for (i=0 ; i<count ; i++)
     {
 	bestscale = MAXINT;
+	best = unsorted.next;
 	for (ds=unsorted.next ; ds!= &unsorted ; ds=ds->next)
 	{
 	    if (ds->scale < bestscale)
