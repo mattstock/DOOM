@@ -44,8 +44,8 @@ rcsid[] = "$Id: i_x.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 #include "doomdef.h"
 
 static unsigned char *vga = (unsigned char *)0xc0000000;
-static unsigned int *vga_palette = (unsigned int *)0xc0400000;
-static unsigned int *sw = (unsigned int *)0x20000810;
+static unsigned int *vga_palette = (unsigned int *)0x80000000;
+static unsigned int *sw = (unsigned int *)0x30000810;
 
 int		X_width;
 int		X_height;
@@ -70,105 +70,9 @@ void I_StartFrame (void)
 boolean		mousemoved = false;
 boolean		shmFinished;
 
-unsigned short joy_x, joy_y;
-
-//  Eventually need to have this run every few tics or similar
-void PollJoystick() {
-  unsigned char a0,a1;
-
-  spi_slow();
-  CLEAR_BIT(SPI_CTL, JOY_SEL);
-  a0 = spi_xfer(0x78);
-  a1 = spi_xfer(0x00);
-  SET_BIT(SPI_CTL, JOY_SEL);
-  joy_y = ((a0 << 8) | a1) & 0x3ff;
-  CLEAR_BIT(SPI_CTL, JOY_SEL);
-  a0 = spi_xfer(0x68);
-  a1 = spi_xfer(0x00);
-  SET_BIT(SPI_CTL, JOY_SEL);
-  joy_x = ((a0 << 8) | a1) & 0x3ff;
-  spi_fast();
-}
-
-static unsigned char kbd[] = {
-  KEY_LEFTARROW,
-  KEY_RIGHTARROW,
-  KEY_DOWNARROW,
-  KEY_UPARROW,
-  KEY_ENTER,
-  KEY_RCTRL,
-  ' ',
-  KEY_ESCAPE
-};
-
 void I_GetEvent(void)
 {
 
-  event_t event;
-  static unsigned int k = 0;
-  static unsigned int j = 0;
-  unsigned int kn, jn;
-  
-  int i;
-
-  PollJoystick();
-
-  jn = 0;
-  if (joy_x < 400)
-    jn = 0x0001;
-  if (joy_x > 650)
-    jn = 0x0002;
-  if (joy_y < 400)
-    jn |= 0x0004;
-  if (joy_y > 650)
-    jn |= 0x0008;
-
-  if (j != jn) {
-    unsigned int a,b;
-    a = j;
-    b = jn;
-    for (i=0; i < 4; i++) {
-      if (((a&1) == 0) && ((b&1) == 1)) {
-	event.type = ev_keydown;
-	event.data1 = kbd[i];
-	D_PostEvent(&event);
-	printf("joy keydown\n");
-      }
-      if (((a&1) == 1) && ((b&1) == 0)) {
-	event.type = ev_keyup;
-	event.data1 = kbd[i];
-	D_PostEvent(&event);
-	printf("joy keyup\n");
-      }
-      a >>= 1;
-      b >>= 1;
-    }
-    j = jn;
-  }
-
-  kn = (sw[0] >> 16) & 0xf;
-  if (k != kn) {
-    unsigned int a,b;
-    a = k;
-    b = kn;
-    for (i=0; i < 4; i++) {
-      if (((a&1) == 0) && ((b&1) == 1)) {
-	event.type = ev_keydown;
-	event.data1 = kbd[i+4];
-	D_PostEvent(&event);
-	printf("keydown\n");
-      }
-      if (((a&1) == 1) && ((b&1) == 0)) {
-	event.type = ev_keyup;
-	event.data1 = kbd[i+4];
-	D_PostEvent(&event);
-	printf("keyup\n");
-      }
-      a >>= 1;
-      b >>= 1;
-    }
-    k = kn;
-  }
 }
 
 //
