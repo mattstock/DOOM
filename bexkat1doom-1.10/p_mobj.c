@@ -650,8 +650,6 @@ void P_SpawnPlayer (mapthing_t* mthing)
 
     int			i;
 
-    printf("P_SpawnPlayer\n");
-
     // not playing?
     if (!playeringame[mthing->type-1])
 	return;					

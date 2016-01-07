@@ -699,8 +699,6 @@ void R_ExecuteSetViewSize (void)
     centeryfrac = centery<<FRACBITS;
     projection = centerxfrac;
 
-    printf("center = (%16x, %16x), centerfrac = (%16x, %16x)\n",
-	   centerx, centery, centerxfrac, centeryfrac);
     if (!detailshift)
     {
 	colfunc = basecolfunc = R_DrawColumn;
@@ -775,22 +773,15 @@ extern int	screenblocks;
 void R_Init (void)
 {
     R_InitData ();
-    printf ("\nR_InitData");
     R_InitPointToAngle ();
-    printf ("\nR_InitPointToAngle");
     R_InitTables ();
     // viewwidth / viewheight / detailLevel are set by the defaults
-    printf ("\nR_InitTables\n");
 
     R_SetViewSize (screenblocks, detailLevel);
     R_InitPlanes ();
-    printf ("\nR_InitPlanes\n");
     R_InitLightTables ();
-    printf ("\nR_InitLightTables");
     R_InitSkyMap ();
-    printf ("\nR_InitSkyMap");
     R_InitTranslationTables ();
-    printf ("\nR_InitTranslationsTables");
 	
     framecount = 0;
 }
@@ -881,17 +872,13 @@ void R_RenderPlayerView (player_t* player)
     
     // check for new console commands.
     NetUpdate ();
-    printf("R_RenderBSPNode start\n");
     // The head node is the last node output.
     R_RenderBSPNode (numnodes-1);
-    printf("    R_RenderBSPNode complete\n");
     
     // Check for new console commands.
     NetUpdate ();
 
-    printf("R_DrawPlanes start\n");    
     R_DrawPlanes ();
-    printf("  R_DrawPlanes complete\n");
     
     // Check for new console commands.
     NetUpdate ();

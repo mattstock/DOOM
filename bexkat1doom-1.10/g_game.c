@@ -920,9 +920,6 @@ void G_DoReborn (int playernum)
 { 
     int                             i; 
 
-    printf("G_DoReborn\n");
-    printf("playernum = %d, netgame = %d\n", playernum, netgame);
-    
     if (!netgame)
     {
 	// reload the level from scratch

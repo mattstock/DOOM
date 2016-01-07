@@ -206,10 +206,6 @@ void D_Display (void)
     boolean			wipe;
     boolean			redrawsbar;
 
-#ifdef D_DEBUG
-    printf("D_Display()\n");
-#endif
-    
     if (nodrawers)
 	return;                    // for comparative timing / profiling
 		
@@ -393,11 +389,10 @@ void D_DoomLoop (void)
 	  TryRunTics (); // will run at least one tic
 	}
 		
-	//	S_UpdateSounds (players[consoleplayer].mo);// move positional sounds
+      S_UpdateSounds (players[consoleplayer].mo);// move positional sounds
 
 	// Update display, next frame, with current state.
 	D_Display ();
-	/*
 #ifndef SNDSERV
 	// Sound mixing for the buffer is snychronous.
 	I_UpdateSound();
@@ -406,7 +401,7 @@ void D_DoomLoop (void)
 #ifndef SNDINTR
 	// Update sound output.
 	I_SubmitSound();
-	#endif*/
+#endif
     }
 }
 
@@ -1142,7 +1137,8 @@ void D_DoomMain (void)
 	    sprintf(file, SAVEGAMENAME"%c.dsg",myargv[p+1][0]);
 	G_LoadGame (file);
     }
-	
+
+    
     if ( gameaction != ga_loadgame )
     {
 	if (autostart || netgame)
@@ -1151,5 +1147,6 @@ void D_DoomMain (void)
 	    D_StartTitle ();                // start up intro loop
 
     }
+
     D_DoomLoop ();  // never returns
 }
