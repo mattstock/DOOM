@@ -6,9 +6,9 @@
 #
 CC=  bexkat1-elf-gcc  # gcc or g++
 
-CFLAGS=-O -Wall -D__BIG_ENDIAN__ -DNORMALUNIX -I/home/mstock/projects/soc/monitor/include # -DUSEASM 
+CFLAGS=-O -Wall -D__BIG_ENDIAN__ -DNORMALUNIX # -DUSEASM 
 LDFLAGS=-specs=de2.specs
-LIBS=-L/home/mstock/projects/soc/monitor/lib -lsupport -lm
+LIBS=-lm
 
 # subdirectory for objects
 O=bexkat1

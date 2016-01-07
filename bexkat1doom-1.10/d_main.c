@@ -206,7 +206,10 @@ void D_Display (void)
     boolean			wipe;
     boolean			redrawsbar;
 
-    printf("D_Display\n");
+#ifdef D_DEBUG
+    printf("D_Display()\n");
+#endif
+    
     if (nodrawers)
 	return;                    // for comparative timing / profiling
 		
@@ -262,9 +265,7 @@ void D_Display (void)
     }
     
     // draw buffered stuff to screen
-    printf("I_UpdateNoBlit start\n");
     I_UpdateNoBlit ();
-    printf("  I_UpdateNoBlit complete\n");
     
     // draw the view directly
     if (gamestate == GS_LEVEL && !automapactive && gametic)
