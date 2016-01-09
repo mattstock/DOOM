@@ -164,7 +164,7 @@ void S_Init
 {  
   int		i;
 
-  fprintf( stderr, "S_Init: default sfx volume %d\n", sfxVolume);
+  printf("S_Init: default sfx volume %d\n", sfxVolume);
 
   // Whatever these did with DMX, these are rather dummies now.
   I_SetChannels();
@@ -269,9 +269,8 @@ S_StartSoundAtVolume
   
   
   // Debug.
-  /*fprintf( stderr,
-  	   "S_StartSoundAtVolume: playing sound %d (%s)\n",
-  	   sfx_id, S_sfx[sfx_id].name );*/
+  iprintf("S_StartSoundAtVolume: playing sound %d (%s)\n",
+  	   sfx_id, S_sfx[sfx_id].name );
   
   // check for bogus sound #
   if (sfx_id < 1 || sfx_id > NUMSFX)
@@ -621,9 +620,7 @@ void S_SetMusicVolume(int volume)
 		volume);
     }    
 
-    I_SetMusicVolume(127);
     I_SetMusicVolume(volume);
-    snd_MusicVolume = volume;
 }
 
 
@@ -658,6 +655,7 @@ S_ChangeMusic
 	 || (musicnum >= NUMMUSIC) )
     {
 	I_Error("Bad music number %d", musicnum);
+	return;
     }
     else
 	music = &S_music[musicnum];
