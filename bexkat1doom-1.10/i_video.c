@@ -161,7 +161,7 @@ void I_GetEvent(void)
   unsigned int rawkey;
   
   rawkey = keyboard_getevent();
-  event.type = (rawkey & 0x200 ? ev_keydown : ev_keyup);
+  event.type = (rawkey & 0x200 ? ev_keyup : ev_keydown);
   event.data1 = scancode(rawkey & 0x100, rawkey & 0xff);
   D_PostEvent(&event);
 }
