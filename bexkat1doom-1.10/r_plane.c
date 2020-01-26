@@ -390,7 +390,6 @@ void R_DrawPlanes (void)
     {
 	if (pl->minx > pl->maxx)
 	    continue;
-
 	
 	// sky flat
 	if (pl->picnum == skyflatnum)

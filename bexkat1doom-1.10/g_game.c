@@ -32,7 +32,6 @@ rcsid[] = "$Id: g_game.c,v 1.8 1997/02/03 22:45:09 b1 Exp $";
 
 #include "z_zone.h"
 #include "f_finale.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "m_menu.h"
 #include "m_random.h"
@@ -139,7 +138,7 @@ wbstartstruct_t wminfo;               	// parms for world map / intermission
  
 short		consistancy[MAXPLAYERS][BACKUPTICS]; 
  
-byte*		savebuffer;
+char*		savebuffer;
  
  
 // 
@@ -456,8 +455,8 @@ void G_DoLoadLevel (void)
     // DOOM determines the sky texture to be used
     // depending on the current episode, and the game version.
     if ( (gamemode == commercial)
-	 || ( gamemode == pack_tnt )
-	 || ( gamemode == pack_plut ) )
+	 || ( gamemission == pack_tnt )
+	 || ( gamemission == pack_plut ) )
     {
 	skytexture = R_TextureNumForName ("SKY3");
 	if (gamemap < 12)
@@ -760,11 +759,6 @@ void G_Ticker (void)
 //
 void G_InitPlayer (int player) 
 { 
-    player_t*	p; 
- 
-    // set up the saved info         
-    p = &players[player]; 
-	 
     // clear everything else to defaults 
     G_PlayerReborn (player); 
 	 
@@ -924,7 +918,7 @@ void G_DeathMatchSpawnPlayer (int playernum)
 void G_DoReborn (int playernum) 
 { 
     int                             i; 
-	 
+
     if (!netgame)
     {
 	// reload the level from scratch
@@ -1200,14 +1194,13 @@ void G_LoadGame (char* name)
 
 void G_DoLoadGame (void) 
 { 
-    int		length; 
     int		i; 
     int		a,b,c; 
     char	vcheck[VERSIONSIZE]; 
 	 
     gameaction = ga_nothing; 
 	 
-    length = M_ReadFile (savename, &savebuffer); 
+    M_ReadFile (savename, &savebuffer); 
     save_p = savebuffer + SAVESTRINGSIZE;
     
     // skip the description field 
@@ -1275,12 +1268,9 @@ void G_DoSaveGame (void)
     int		length; 
     int		i; 
 	
-    if (M_CheckParm("-cdrom"))
-	sprintf(name,"c:\\doomdata\\"SAVEGAMENAME"%d.dsg",savegameslot);
-    else
-	sprintf (name,SAVEGAMENAME"%d.dsg",savegameslot); 
+    sprintf (name,SAVEGAMENAME"%d.dsg",savegameslot); 
     description = savedescription; 
-	 
+
     save_p = savebuffer = screens[1]+0x4000; 
 	 
     memcpy (save_p, description, SAVESTRINGSIZE); 
@@ -1536,9 +1526,6 @@ void G_RecordDemo (char* name)
     strcpy (demoname, name); 
     strcat (demoname, ".lmp"); 
     maxsize = 0x20000;
-    i = M_CheckParm ("-maxdemo");
-    if (i && i<myargc-1)
-	maxsize = atoi(myargv[i+1])*1024;
     demobuffer = Z_Malloc (maxsize,PU_STATIC,NULL); 
     demoend = demobuffer + maxsize;
 	
@@ -1624,13 +1611,13 @@ void G_DoPlayDemo (void)
 //
 void G_TimeDemo (char* name) 
 { 	 
-    nodrawers = M_CheckParm ("-nodraw"); 
-    noblit = M_CheckParm ("-noblit"); 
-    timingdemo = true; 
-    singletics = true; 
-
-    defdemoname = name; 
-    gameaction = ga_playdemo; 
+  nodrawers = 0;
+  noblit = 0;
+  timingdemo = true; 
+  singletics = true; 
+  
+  defdemoname = name; 
+  gameaction = ga_playdemo; 
 } 
  
  

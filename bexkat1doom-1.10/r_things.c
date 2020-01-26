@@ -636,7 +636,7 @@ void R_AddSprites (sector_t* sec)
 
     // Handle all things in sector.
     for (thing = sec->thinglist ; thing ; thing = thing->snext)
-	R_ProjectSprite (thing);
+      R_ProjectSprite (thing);
 }
 
 
@@ -817,6 +817,7 @@ void R_SortVisSprites (void)
     for (i=0 ; i<count ; i++)
     {
 	bestscale = MAXINT;
+	best = unsorted.next;
 	for (ds=unsorted.next ; ds!= &unsorted ; ds=ds->next)
 	{
 	    if (ds->scale < bestscale)

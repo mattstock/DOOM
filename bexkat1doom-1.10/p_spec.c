@@ -35,7 +35,6 @@ rcsid[] = "$Id: p_spec.c,v 1.6 1997/02/03 22:45:12 b1 Exp $";
 
 #include "i_system.h"
 #include "z_zone.h"
-#include "m_argv.h"
 #include "m_random.h"
 #include "w_wad.h"
 
@@ -1184,7 +1183,7 @@ int EV_DoDonut(line_t*	line)
 	s2 = getNextSector(s1->lines[0],s1);
 	for (i = 0;i < s2->linecount;i++)
 	{
-	    if ((!s2->lines[i]->flags & ML_TWOSIDED) ||
+	  if ((!(s2->lines[i]->flags & ML_TWOSIDED)) ||
 		(s2->lines[i]->backsector == s1))
 		continue;
 	    s3 = s2->lines[i]->backsector;
@@ -1240,32 +1239,10 @@ void P_SpawnSpecials (void)
 {
     sector_t*	sector;
     int		i;
-    int		episode;
-
-    episode = 1;
-    if (W_CheckNumForName("texture2") >= 0)
-	episode = 2;
-
     
     // See if -TIMER needs to be used.
     levelTimer = false;
 	
-    i = M_CheckParm("-avg");
-    if (i && deathmatch)
-    {
-	levelTimer = true;
-	levelTimeCount = 20 * 60 * 35;
-    }
-	
-    i = M_CheckParm("-timer");
-    if (i && deathmatch)
-    {
-	int	time;
-	time = atoi(myargv[i+1]) * 60 * 35;
-	levelTimer = true;
-	levelTimeCount = time;
-    }
-    
     //	Init special SECTORs.
     sector = sectors;
     for (i=0 ; i<numsectors ; i++, sector++)

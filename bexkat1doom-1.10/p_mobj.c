@@ -653,7 +653,7 @@ void P_SpawnPlayer (mapthing_t* mthing)
     // not playing?
     if (!playeringame[mthing->type-1])
 	return;					
-		
+
     p = &players[mthing->type-1];
 
     if (p->playerstate == PST_REBORN)

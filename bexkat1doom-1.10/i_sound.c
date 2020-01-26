@@ -44,36 +44,12 @@ rcsid[] = "$Id: i_unix.c,v 1.5 1997/02/03 22:45:10 b1 Exp $";
 
 #include "i_system.h"
 #include "i_sound.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "w_wad.h"
 
 #include "doomdef.h"
-
-// UNIX hack, to be removed.
-#ifdef SNDSERV
-// Separate sound server process.
-FILE*	sndserver=0;
-char*	sndserver_filename = "./sndserver ";
-#elif SNDINTR
-
-// Update all 30 millisecs, approx. 30fps synchronized.
-// Linux resolution is allegedly 10 millisecs,
-//  scale is microseconds.
-#define SOUND_INTERVAL     500
-
-// Get the interrupt. Set duration in millisecs.
-int I_SoundSetTimer( int duration_of_tick );
-void I_SoundDelTimer( void );
-#else
-// None?
-#endif
-
-
-// A quick hack to establish a protocol between
-// synchronous mix buffer updates and asynchronous
-// audio writes. Probably redundant with gametic.
-static int flag = 0;
+#include "codec.h"
+#include "misc.h"
 
 // The number of internal mixing channels,
 //  the samples calculated for each mixing step,
@@ -94,15 +70,11 @@ static int flag = 0;
 // The actual lengths of all sound effects.
 int 		lengths[NUMSFX];
 
-// The actual output device.
-int	audio_fd;
-
 // The global mixing buffer.
 // Basically, samples from all active internal channels
 //  are modifed and added, and stored in the buffer
 //  that is submitted to the audio device.
 signed short	mixbuffer[MIXBUFFERSIZE];
-
 
 // The channel step amount...
 unsigned int	channelstep[NUM_CHANNELS];
@@ -143,33 +115,6 @@ int*		channelleftvol_lookup[NUM_CHANNELS];
 int*		channelrightvol_lookup[NUM_CHANNELS];
 
 
-
-
-//
-// Safe ioctl, convenience.
-//
-void
-myioctl
-( int	fd,
-  int	command,
-  int*	arg )
-{   
-    int		rc;
-    extern int	errno;
-    
-    rc = ioctl(fd, command, arg);  
-    if (rc < 0)
-    {
-	fprintf(stderr, "ioctl(dsp,%d,arg) failed\n", command);
-	fprintf(stderr, "errno=%d\n", errno);
-	exit(-1);
-    }
-}
-
-
-
-
-
 //
 // This function loads the sound data from the WAD lump,
 //  for single sound.
@@ -192,16 +137,6 @@ getsfx
     //  in zone memory.
     sprintf(name, "ds%s", sfxname);
 
-    // Now, there is a severe problem with the
-    //  sound handling, in it is not (yet/anymore)
-    //  gamemode aware. That means, sounds from
-    //  DOOM II will be requested even with DOOM
-    //  shareware.
-    // The sound list is wired into sounds.c,
-    //  which sets the external variable.
-    // I do not do runtime patches to that
-    //  variable. Instead, we will use a
-    //  default sound for replacement.
     if ( W_CheckNumForName(name) == -1 )
       sfxlump = W_GetNumForName("dspistol");
     else
@@ -209,11 +144,7 @@ getsfx
     
     size = W_LumpLength( sfxlump );
 
-    // Debug.
-    // fprintf( stderr, "." );
-    //fprintf( stderr, " -loading  %s (lump %d, %d bytes)\n",
-    //	     sfxname, sfxlump, size );
-    //fflush( stderr );
+    iprintf(" -loading  %s (lump %d, %d bytes)\n", sfxname, sfxlump, size );
     
     sfx = (unsigned char*)W_CacheLumpNum( sfxlump, PU_STATIC );
 
@@ -223,9 +154,6 @@ getsfx
 
     // Allocate from zone memory.
     paddedsfx = (unsigned char*)Z_Malloc( paddedsize+8, PU_STATIC, 0 );
-    // ddt: (unsigned char *) realloc(sfx, paddedsize+8);
-    // This should interfere with zone memory handling,
-    //  which does not kick in in the soundserver.
 
     // Now copy and pad.
     memcpy(  paddedsfx, sfx, size );
@@ -241,10 +169,6 @@ getsfx
     // Return allocated padded data.
     return (void *) (paddedsfx + 8);
 }
-
-
-
-
 
 //
 // This function adds a sound to the
@@ -376,15 +300,6 @@ addsfx
 
 
 
-//
-// SFX API
-// Note: this was called by S_Init.
-// However, whatever they did in the
-// old DPMS based DOS version, this
-// were simply dummies in the Linux
-// version.
-// See soundserver initdata().
-//
 void I_SetChannels()
 {
   // Init internal lookups (raw data, mixing buffer, channels).
@@ -426,13 +341,17 @@ void I_SetSfxVolume(int volume)
   snd_SfxVolume = volume;
 }
 
-// MUSIC API - dummy. Some code from DOS version.
+// 0-15 input ff-00 out
 void I_SetMusicVolume(int volume)
 {
+  unsigned short scaled;
+  
   // Internal state variable.
   snd_MusicVolume = volume;
-  // Now set volume on output device.
-  // Whatever( snd_MusciVolume );
+
+  scaled = ~(volume << 4) & 0xff;
+  scaled |= scaled << 8;
+  codec_sci_write(CODEC_REG_VOL, volume);
 }
 
 
@@ -468,52 +387,23 @@ I_StartSound
   int		priority )
 {
 
-  // UNUSED
-  priority = 0;
-  
-#ifdef SNDSERV 
-    if (sndserver)
-    {
-	fprintf(sndserver, "p%2.2x%2.2x%2.2x%2.2x\n", id, pitch, vol, sep);
-	fflush(sndserver);
-    }
-    // warning: control reaches end of non-void function.
-    return id;
-#else
-    // Debug.
-    //fprintf( stderr, "starting sound %d", id );
-    
-    // Returns a handle (not used).
-    id = addsfx( id, vol, steptable[pitch], sep );
+  printf("I_StartSound: p%2.2x%2.2x%2.2x%2.2x\n", id, pitch, vol, sep);
+  return id;
 
-    // fprintf( stderr, "/handle is %d\n", id );
-    
-    return id;
-#endif
+  // id = addsfx( id, vol, steptable[pitch], sep );
 }
 
 
 
 void I_StopSound (int handle)
 {
-  // You need the handle returned by StartSound.
-  // Would be looping all channels,
-  //  tracking down the handle,
-  //  an setting the channel to zero.
-  
-  // UNUSED.
-  handle = 0;
 }
 
 
 int I_SoundIsPlaying(int handle)
 {
-    // Ouch.
-    return gametic < handle;
+    return 0;
 }
-
-
-
 
 //
 // This function loops all active (internal) sound
@@ -530,12 +420,6 @@ int I_SoundIsPlaying(int handle)
 //
 void I_UpdateSound( void )
 {
-#ifdef SNDINTR
-  // Debug. Count buffer misses with interrupt.
-  static int misses = 0;
-#endif
-
-  
   // Mix current sound data.
   // Data, from raw sound, for right and left.
   register unsigned int	sample;
@@ -552,97 +436,79 @@ void I_UpdateSound( void )
   // Mixing channel index.
   int				chan;
     
-    // Left and right channel
-    //  are in global mixbuffer, alternating.
-    leftout = mixbuffer;
-    rightout = mixbuffer+1;
-    step = 2;
-
-    // Determine end, for left channel only
-    //  (right channel is implicit).
-    leftend = mixbuffer + SAMPLECOUNT*step;
-
-    // Mix sounds into the mixing buffer.
-    // Loop over step*SAMPLECOUNT,
-    //  that is 512 values for two channels.
-    while (leftout != leftend)
+  // Left and right channel
+  //  are in global mixbuffer, alternating.
+  leftout = mixbuffer;
+  rightout = mixbuffer+1;
+  step = 2;
+  
+  // Determine end, for left channel only
+  //  (right channel is implicit).
+  leftend = mixbuffer + SAMPLECOUNT*step;
+  
+  // Mix sounds into the mixing buffer.
+  // Loop over step*SAMPLECOUNT,
+  //  that is 512 values for two channels.
+  while (leftout != leftend)
     {
-	// Reset left/right value. 
-	dl = 0;
-	dr = 0;
-
-	// Love thy L2 chache - made this a loop.
-	// Now more channels could be set at compile time
-	//  as well. Thus loop those  channels.
-	for ( chan = 0; chan < NUM_CHANNELS; chan++ )
+      // Reset left/right value. 
+      dl = 0;
+      dr = 0;
+      
+      // Love thy L2 chache - made this a loop.
+      // Now more channels could be set at compile time
+      //  as well. Thus loop those  channels.
+      for ( chan = 0; chan < NUM_CHANNELS; chan++ )
 	{
-	    // Check channel, if active.
-	    if (channels[ chan ])
+	  // Check channel, if active.
+	  if (channels[ chan ])
 	    {
-		// Get the raw data from the channel. 
-		sample = *channels[ chan ];
-		// Add left and right part
-		//  for this channel (sound)
-		//  to the current data.
-		// Adjust volume accordingly.
-		dl += channelleftvol_lookup[ chan ][sample];
-		dr += channelrightvol_lookup[ chan ][sample];
-		// Increment index ???
-		channelstepremainder[ chan ] += channelstep[ chan ];
-		// MSB is next sample???
-		channels[ chan ] += channelstepremainder[ chan ] >> 16;
-		// Limit to LSB???
-		channelstepremainder[ chan ] &= 65536-1;
-
-		// Check whether we are done.
-		if (channels[ chan ] >= channelsend[ chan ])
-		    channels[ chan ] = 0;
+	      // Get the raw data from the channel. 
+	      sample = *channels[ chan ];
+	      // Add left and right part
+	      //  for this channel (sound)
+	      //  to the current data.
+	      // Adjust volume accordingly.
+	      dl += channelleftvol_lookup[ chan ][sample];
+	      dr += channelrightvol_lookup[ chan ][sample];
+	      // Increment index ???
+	      channelstepremainder[ chan ] += channelstep[ chan ];
+	      // MSB is next sample???
+	      channels[ chan ] += channelstepremainder[ chan ] >> 16;
+	      // Limit to LSB???
+	      channelstepremainder[ chan ] &= 65536-1;
+	      
+	      // Check whether we are done.
+	      if (channels[ chan ] >= channelsend[ chan ])
+		channels[ chan ] = 0;
 	    }
 	}
-	
-	// Clamp to range. Left hardware channel.
-	// Has been char instead of short.
-	// if (dl > 127) *leftout = 127;
-	// else if (dl < -128) *leftout = -128;
-	// else *leftout = dl;
-
-	if (dl > 0x7fff)
-	    *leftout = 0x7fff;
-	else if (dl < -0x8000)
-	    *leftout = -0x8000;
-	else
-	    *leftout = dl;
-
-	// Same for right hardware channel.
-	if (dr > 0x7fff)
-	    *rightout = 0x7fff;
-	else if (dr < -0x8000)
-	    *rightout = -0x8000;
-	else
-	    *rightout = dr;
-
-	// Increment current pointers in mixbuffer.
-	leftout += step;
-	rightout += step;
+      
+      // Clamp to range. Left hardware channel.
+      // Has been char instead of short.
+      // if (dl > 127) *leftout = 127;
+      // else if (dl < -128) *leftout = -128;
+      // else *leftout = dl;
+      
+      if (dl > 0x7fff)
+	*leftout = 0x7fff;
+      else if (dl < -0x8000)
+	*leftout = -0x8000;
+      else
+	*leftout = dl;
+      
+      // Same for right hardware channel.
+      if (dr > 0x7fff)
+	*rightout = 0x7fff;
+      else if (dr < -0x8000)
+	*rightout = -0x8000;
+      else
+	*rightout = dr;
+      
+      // Increment current pointers in mixbuffer.
+      leftout += step;
+      rightout += step;
     }
-
-#ifdef SNDINTR
-    // Debug check.
-    if ( flag )
-    {
-      misses += flag;
-      flag = 0;
-    }
-    
-    if ( misses > 10 )
-    {
-      fprintf( stderr, "I_SoundUpdate: missed 10 buffer writes\n");
-      misses = 0;
-    }
-    
-    // Increment flag for update.
-    flag++;
-#endif
 }
 
 
@@ -657,11 +523,7 @@ void I_UpdateSound( void )
 void
 I_SubmitSound(void)
 {
-  // Write it to DSP device.
-  write(audio_fd, mixbuffer, SAMPLECOUNT*BUFMUL);
 }
-
-
 
 void
 I_UpdateSoundParams
@@ -679,114 +541,18 @@ I_UpdateSoundParams
   handle = vol = sep = pitch = 0;
 }
 
-
-
-
 void I_ShutdownSound(void)
 {    
-#ifdef SNDSERV
-  if (sndserver)
-  {
-    // Send a "quit" command.
-    fprintf(sndserver, "q\n");
-    fflush(sndserver);
-  }
-#else
-  // Wait till all pending sounds are finished.
-  int done = 0;
-  int i;
-  
-
-  // FIXME (below).
-  fprintf( stderr, "I_ShutdownSound: NOT finishing pending sounds\n");
-  fflush( stderr );
-  
-  while ( !done )
-  {
-    for( i=0 ; i<8 && !channels[i] ; i++);
-    
-    // FIXME. No proper channel output.
-    //if (i==8)
-    done=1;
-  }
-#ifdef SNDINTR
-  I_SoundDelTimer();
-#endif
-  
-  // Cleaning up -releasing the DSP device.
-  close ( audio_fd );
-#endif
-
-  // Done.
-  return;
+  iprintf("I_ShutdownSound\n");
 }
-
-
-
-
-
 
 void
 I_InitSound()
-{ 
-#ifdef SNDSERV
-  char buffer[256];
-  
-  if (getenv("DOOMWADDIR"))
-    sprintf(buffer, "%s/%s",
-	    getenv("DOOMWADDIR"),
-	    sndserver_filename);
-  else
-    sprintf(buffer, "%s", sndserver_filename);
-  
-  // start sound process
-  if ( !access(buffer, X_OK) )
-  {
-    strcat(buffer, " -quiet");
-    sndserver = popen(buffer, "w");
-  }
-  else
-    fprintf(stderr, "Could not start sound server [%s]\n", buffer);
-#else
-    
+{
   int i;
   
-#ifdef SNDINTR
-  fprintf( stderr, "I_SoundSetTimer: %d microsecs\n", SOUND_INTERVAL );
-  I_SoundSetTimer( SOUND_INTERVAL );
-#endif
-    
   // Secure and configure sound device first.
-  fprintf( stderr, "I_InitSound: ");
-  
-  audio_fd = open("/dev/dsp", O_WRONLY);
-  if (audio_fd<0)
-    fprintf(stderr, "Could not open /dev/dsp\n");
-  
-                     
-  i = 11 | (2<<16);                                           
-  myioctl(audio_fd, SNDCTL_DSP_SETFRAGMENT, &i);
-  myioctl(audio_fd, SNDCTL_DSP_RESET, 0);
-  
-  i=SAMPLERATE;
-  
-  myioctl(audio_fd, SNDCTL_DSP_SPEED, &i);
-  
-  i=1;
-  myioctl(audio_fd, SNDCTL_DSP_STEREO, &i);
-  
-  myioctl(audio_fd, SNDCTL_DSP_GETFMTS, &i);
-  
-  if (i&=AFMT_S16_LE)    
-    myioctl(audio_fd, SNDCTL_DSP_SETFMT, &i);
-  else
-    fprintf(stderr, "Could not play signed 16 data\n");
-
-  fprintf(stderr, " configured audio device\n" );
-
-    
-  // Initialize external data (all sounds) at start, keep static.
-  fprintf( stderr, "I_InitSound: ");
+  iprintf("I_InitSound: ");
   
   for (i=1 ; i<NUMSFX ; i++)
   { 
@@ -804,16 +570,14 @@ I_InitSound()
     }
   }
 
-  fprintf( stderr, " pre-cached all sound data\n");
+  iprintf(" pre-cached all sound data\n");
   
   // Now initialize mixbuffer with zero.
   for ( i = 0; i< MIXBUFFERSIZE; i++ )
     mixbuffer[i] = 0;
   
   // Finished initialization.
-  fprintf(stderr, "I_InitSound: sound module ready\n");
-    
-#endif
+  iprintf("I_InitSound: sound module ready\n");
 }
 
 
@@ -821,11 +585,17 @@ I_InitSound()
 
 //
 // MUSIC API.
-// Still no music done.
-// Remains. Dummies.
-//
-void I_InitMusic(void)		{ }
-void I_ShutdownMusic(void)	{ }
+void I_InitMusic(void)
+{
+  codec_reset();
+  delay(100);
+  codec_sci_write(CODEC_REG_CLOCKF, 0x8800);
+  delay(10000);
+}
+
+void I_ShutdownMusic(void)
+{
+}
 
 static int	looping=0;
 static int	musicdies=-1;
@@ -882,72 +652,18 @@ int I_QrySongPlaying(int handle)
 
 
 
-//
-// Experimental stuff.
-// A Linux timer interrupt, for asynchronous
-//  sound output.
-// I ripped this out of the Timer class in
-//  our Difference Engine, including a few
-//  SUN remains...
-//  
-#ifdef sun
-    typedef     sigset_t        tSigSet;
-#else    
-    typedef     int             tSigSet;
-#endif
-
-
-// We might use SIGVTALRM and ITIMER_VIRTUAL, if the process
-//  time independend timer happens to get lost due to heavy load.
-// SIGALRM and ITIMER_REAL doesn't really work well.
-// There are issues with profiling as well.
-static int /*__itimer_which*/  itimer = ITIMER_REAL;
-
-static int sig = SIGALRM;
-
 // Interrupt handler.
-void I_HandleSoundTimer( int ignore )
+void I_HandleSoundTimer(void)
 {
-  // Debug.
-  //fprintf( stderr, "%c", '+' ); fflush( stderr );
-  
-  // Feed sound device if necesary.
-  if ( flag )
-  {
-    // See I_SubmitSound().
-    // Write it to DSP device.
-    write(audio_fd, mixbuffer, SAMPLECOUNT*BUFMUL);
-
-    // Reset flag counter.
-    flag = 0;
-  }
-  else
-    return;
-  
-  // UNUSED, but required.
-  ignore = 0;
-  return;
 }
 
 // Get the interrupt. Set duration in millisecs.
-int I_SoundSetTimer( int duration_of_tick )
+void I_SoundSetTimer(int interval)
 {
-  // Needed for gametick clockwork.
-  struct itimerval    value;
-  struct itimerval    ovalue;
-  struct sigaction    act;
-  struct sigaction    oact;
-
-  int res;
-  
-  return res;
 }
 
 
 // Remove the interrupt. Set duration to zero.
 void I_SoundDelTimer()
 {
-  // Debug.
-  if ( I_SoundSetTimer( 0 ) == -1)
-    fprintf( stderr, "I_SoundDelTimer: failed to remove interrupt. Doh!\n");
 }

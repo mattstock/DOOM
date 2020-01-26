@@ -498,6 +498,10 @@ EV_BuildStairs
 	    speed = FLOORSPEED*4;
 	    stairsize = 16*FRACUNIT;
 	    break;
+	  default:
+	    speed = FLOORSPEED/4;
+	    stairsize = 8*FRACUNIT;
+	    break;
 	}
 	floor->speed = speed;
 	height = sec->floorheight + stairsize;

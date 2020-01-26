@@ -5,9 +5,10 @@
 # $Log:$
 #
 CC=  bexkat1-elf-gcc  # gcc or g++
+AS=  bexkat1-elf-as
 
-CFLAGS=-g -DNORMALUNIX # -DUSEASM 
-LDFLAGS=-specs=de2.specs
+CFLAGS=-O -Wall -D__BIG_ENDIAN__ -DNORMALUNIX -Wunused-const-variable=0
+LDFLAGS=-specs=max10.specs
 LIBS=-lm
 
 # subdirectory for objects
@@ -31,7 +32,6 @@ OBJS=				\
 		$(O)/g_game.o			\
 		$(O)/m_menu.o			\
 		$(O)/m_misc.o			\
-		$(O)/m_argv.o  		\
 		$(O)/m_bbox.o			\
 		$(O)/m_fixed.o		\
 		$(O)/m_swap.o			\
@@ -75,7 +75,12 @@ OBJS=				\
 		$(O)/s_sound.o		\
 		$(O)/z_zone.o			\
 		$(O)/info.o				\
-		$(O)/sounds.o
+		$(O)/sounds.o \
+		$(O)/ff.o \
+		$(O)/mmc.o \
+		$(O)/gettime.o \
+		$(O)/vectors.o \
+		$(O)/setint.o
 
 all:	 $(O)/bexkat1doom
 
@@ -86,6 +91,9 @@ clean:
 $(O)/bexkat1doom:	$(OBJS) $(O)/i_main.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(O)/i_main.o \
 	-o $(O)/bexkat1doom $(LIBS)
+
+$(O)/%.o:	%.S
+	$(AS) -o $@ $<
 
 $(O)/%.o:	%.c
 	$(CC) $(CFLAGS) -c $< -o $@

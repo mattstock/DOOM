@@ -393,13 +393,10 @@ void HU_Init(void)
 {
 
     int		i;
-    int		j;
+    unsigned char j;
     char	buffer[9];
 
-    if (french)
-	shiftxform = french_shiftxform;
-    else
-	shiftxform = english_shiftxform;
+    shiftxform = english_shiftxform;
 
     // load the heads-up font
     j = HU_FONTSTART;
@@ -727,8 +724,6 @@ boolean HU_Responder(event_t *ev)
 	}
 	else
 	{
-	    if (french)
-		c = ForeignTranslation(c);
 	    if (shiftdown || (c >= 'a' && c <= 'z'))
 		c = shiftxform[c];
 	    eatkey = HUlib_keyInIText(&w_chat, c);

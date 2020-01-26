@@ -51,7 +51,6 @@ rcsid[] = "$Id: m_menu.c,v 1.7 1997/02/03 22:45:10 b1 Exp $";
 
 #include "g_game.h"
 
-#include "m_argv.h"
 #include "m_swap.h"
 
 #include "s_sound.h"
@@ -511,16 +510,12 @@ menu_t  SaveDef =
 void M_ReadSaveStrings(void)
 {
     int             handle;
-    int             count;
     int             i;
     char    name[256];
 	
     for (i = 0;i < load_end;i++)
     {
-	if (M_CheckParm("-cdrom"))
-	    sprintf(name,"c:\\doomdata\\"SAVEGAMENAME"%d.dsg",i);
-	else
-	    sprintf(name,SAVEGAMENAME"%d.dsg",i);
+        sprintf(name,SAVEGAMENAME"%d.dsg",i);
 
 	handle = open (name, O_RDONLY | 0, 0666);
 	if (handle == -1)
@@ -529,7 +524,7 @@ void M_ReadSaveStrings(void)
 	    LoadMenu[i].status = 0;
 	    continue;
 	}
-	count = read (handle, &savegamestrings[i], SAVESTRINGSIZE);
+	read (handle, &savegamestrings[i], SAVESTRINGSIZE);
 	close (handle);
 	LoadMenu[i].status = 1;
     }
@@ -580,10 +575,7 @@ void M_LoadSelect(int choice)
 {
     char    name[256];
 	
-    if (M_CheckParm("-cdrom"))
-	sprintf(name,"c:\\doomdata\\"SAVEGAMENAME"%d.dsg",choice);
-    else
-	sprintf(name,SAVEGAMENAME"%d.dsg",choice);
+    sprintf(name,SAVEGAMENAME"%d.dsg",choice);
     G_LoadGame (name);
     M_ClearMenus ();
 }

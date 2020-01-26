@@ -41,7 +41,6 @@ rcsid[] = "$Id: m_misc.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 #include "z_zone.h"
 
 #include "m_swap.h"
-#include "m_argv.h"
 
 #include "w_wad.h"
 
@@ -139,11 +138,11 @@ M_WriteFile
 int
 M_ReadFile
 ( char const*	name,
-  byte**	buffer )
+  char**	buffer )
 {
     int	handle, count, length;
     struct stat	fileinfo;
-    byte		*buf;
+    char		*buf;
 	
     handle = open (name, O_RDONLY | O_BINARY, 0666);
     if (handle == -1)
@@ -207,12 +206,6 @@ extern int	showMessages;
 extern	int	numChannels;
 
 
-// UNIX hack, to be removed.
-#ifdef SNDSERV
-extern char*	sndserver_filename;
-extern int	mb_used;
-#endif
-
 #ifdef LINUX
 char*		mousetype;
 char*		mousedev;
@@ -251,13 +244,6 @@ default_t	defaults[] =
     {"key_use",&key_use, ' '},
     {"key_strafe",&key_strafe, KEY_RALT},
     {"key_speed",&key_speed, KEY_RSHIFT},
-
-// UNIX hack, to be removed. 
-#ifdef SNDSERV
-    {"sndserver", (int *) &sndserver_filename, (int) "sndserver"},
-    {"mb_used", &mb_used, 2},
-#endif
-    
 #endif
 
 #ifdef LINUX
@@ -340,66 +326,13 @@ extern byte	scantokey[128];
 void M_LoadDefaults (void)
 {
     int		i;
-    int		len;
-    FILE*	f;
-    char	def[80];
-    char	strparm[100];
-    char*	newstring;
-    int		parm;
-    boolean	isstring;
     
     // set everything to base values
     numdefaults = sizeof(defaults)/sizeof(defaults[0]);
     for (i=0 ; i<numdefaults ; i++)
 	*defaults[i].location = defaults[i].defaultvalue;
     
-    // check for a custom default file
-    i = M_CheckParm ("-config");
-    if (i && i<myargc-1)
-    {
-	defaultfile = myargv[i+1];
-	printf ("	default file: %s\n",defaultfile);
-    }
-    else
-	defaultfile = basedefault;
-    
-    // read the file in, overriding any set defaults
-    f = fopen (defaultfile, "r");
-    if (f)
-    {
-	while (!feof(f))
-	{
-	    isstring = false;
-	    if (fscanf (f, "%79s %[^\n]\n", def, strparm) == 2)
-	    {
-		if (strparm[0] == '"')
-		{
-		    // get a string default
-		    isstring = true;
-		    len = strlen(strparm);
-		    newstring = (char *) malloc(len);
-		    strparm[len-1] = 0;
-		    strcpy(newstring, strparm+1);
-		}
-		else if (strparm[0] == '0' && strparm[1] == 'x')
-		    sscanf(strparm+2, "%x", &parm);
-		else
-		    sscanf(strparm, "%i", &parm);
-		for (i=0 ; i<numdefaults ; i++)
-		    if (!strcmp(def, defaults[i].name))
-		    {
-			if (!isstring)
-			    *defaults[i].location = parm;
-			else
-			    *defaults[i].location =
-				(int) newstring;
-			break;
-		    }
-	    }
-	}
-		
-	fclose (f);
-    }
+    return;
 }
 
 
@@ -517,8 +450,9 @@ void M_ScreenShot (void)
     {
 	lbmname[4] = i/10 + '0';
 	lbmname[5] = i%10 + '0';
-	if (access(lbmname,0) == -1)
-	    break;	// file doesn't exist
+	break;
+/*	if (access(lbmname,0) == -1)
+	    break;	// file doesn't exist */
     }
     if (i==100)
 	I_Error ("M_ScreenShot: Couldn't create a PCX");
