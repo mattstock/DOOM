@@ -32,7 +32,6 @@ OBJS=				\
 		$(O)/g_game.o			\
 		$(O)/m_menu.o			\
 		$(O)/m_misc.o			\
-		$(O)/m_argv.o  		\
 		$(O)/m_bbox.o			\
 		$(O)/m_fixed.o		\
 		$(O)/m_swap.o			\
@@ -87,6 +86,9 @@ clean:
 $(O)/bexkat1doom:	$(OBJS) $(O)/i_main.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(O)/i_main.o \
 	-o $(O)/bexkat1doom $(LIBS)
+
+$(O)/%.o:	%.S
+	$(AS) -o $@ $<
 
 $(O)/%.o:	%.c
 	$(CC) $(CFLAGS) -c $< -o $@

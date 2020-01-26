@@ -32,7 +32,6 @@ rcsid[] = "$Id: g_game.c,v 1.8 1997/02/03 22:45:09 b1 Exp $";
 
 #include "z_zone.h"
 #include "f_finale.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "m_menu.h"
 #include "m_random.h"
@@ -1269,10 +1268,7 @@ void G_DoSaveGame (void)
     int		length; 
     int		i; 
 	
-    if (M_CheckParm("-cdrom"))
-	sprintf(name,"c:\\doomdata\\"SAVEGAMENAME"%d.dsg",savegameslot);
-    else
-	sprintf (name,SAVEGAMENAME"%d.dsg",savegameslot); 
+    sprintf (name,SAVEGAMENAME"%d.dsg",savegameslot); 
     description = savedescription; 
 
     save_p = savebuffer = screens[1]+0x4000; 
@@ -1530,9 +1526,6 @@ void G_RecordDemo (char* name)
     strcpy (demoname, name); 
     strcat (demoname, ".lmp"); 
     maxsize = 0x20000;
-    i = M_CheckParm ("-maxdemo");
-    if (i && i<myargc-1)
-	maxsize = atoi(myargv[i+1])*1024;
     demobuffer = Z_Malloc (maxsize,PU_STATIC,NULL); 
     demoend = demobuffer + maxsize;
 	
@@ -1618,13 +1611,13 @@ void G_DoPlayDemo (void)
 //
 void G_TimeDemo (char* name) 
 { 	 
-    nodrawers = M_CheckParm ("-nodraw"); 
-    noblit = M_CheckParm ("-noblit"); 
-    timingdemo = true; 
-    singletics = true; 
-
-    defdemoname = name; 
-    gameaction = ga_playdemo; 
+  nodrawers = 0;
+  noblit = 0;
+  timingdemo = true; 
+  singletics = true; 
+  
+  defdemoname = name; 
+  gameaction = ga_playdemo; 
 } 
  
  
