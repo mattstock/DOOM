@@ -142,7 +142,6 @@ void W_AddFile (char *filename)
     int			length;
     int			startlump;
     filelump_t*		fileinfo;
-    filelump_t		singleinfo;
     int			storehandle;
     
     // open the file and add to directory
@@ -154,48 +153,39 @@ void W_AddFile (char *filename)
 	reloadname = filename;
 	reloadlump = numlumps;
     }
-		
+
+    printf("Opening %s\n", filename);
     if ( (handle = open (filename,O_RDONLY | O_BINARY)) == -1)
     {
 	printf (" couldn't open %s\n",filename);
 	return;
     }
 
+    printf("Got file handle\n");
     startlump = numlumps;
 	
-    if (strcmpi (filename+strlen(filename)-3 , "wad" ) )
-    {
-	// single lump file
-	fileinfo = &singleinfo;
-	singleinfo.filepos = 0;
-	singleinfo.size = LONG(filelength(handle));
-	ExtractFileBase (filename, singleinfo.name);
-	numlumps++;
-    }
-    else 
-    {
-	// WAD file
-	read (handle, &header, sizeof(header));
-	if (strncmp(header.identification,"IWAD",4))
-	{
-	    // Homebrew levels?
-	    if (strncmp(header.identification,"PWAD",4))
-	    {
-		I_Error ("Wad file %s doesn't have IWAD "
-			 "or PWAD id\n", filename);
-	    }
-	    
-	    // ???modifiedgame = true;		
-	}
-	header.numlumps = LONG(header.numlumps);
-	header.infotableofs = LONG(header.infotableofs);
-	length = header.numlumps*sizeof(filelump_t);
-	fileinfo = alloca (length);
-	lseek (handle, header.infotableofs, SEEK_SET);
-	read (handle, fileinfo, length);
-	numlumps += header.numlumps;
-    }
-
+    // WAD file
+    read (handle, &header, sizeof(header));
+    printf("read header\n");
+    if (strncmp(header.identification,"IWAD",4))
+      {
+	// Homebrew levels?
+	if (strncmp(header.identification,"PWAD",4))
+	  {
+	    I_Error ("Wad file %s doesn't have IWAD "
+		     "or PWAD id\n", filename);
+	  }
+	
+	// ???modifiedgame = true;		
+      }
+    header.numlumps = LONG(header.numlumps);
+    printf("numlumps = %d\n", header.numlumps);
+    header.infotableofs = LONG(header.infotableofs);
+    length = header.numlumps*sizeof(filelump_t);
+    fileinfo = alloca (length);
+    lseek (handle, header.infotableofs, SEEK_SET);
+    read (handle, fileinfo, length);
+    numlumps += header.numlumps;
     
     // Fill in lumpinfo
     lumpinfo = realloc (lumpinfo, numlumps*sizeof(lumpinfo_t));
@@ -217,6 +207,7 @@ void W_AddFile (char *filename)
 	
     if (reloadname)
 	close (handle);
+    printf("Done loading\n");
 }
 
 

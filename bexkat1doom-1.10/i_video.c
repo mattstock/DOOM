@@ -37,7 +37,6 @@ rcsid[] = "$Id: i_x.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 #include "doomstat.h"
 #include "i_system.h"
 #include "v_video.h"
-#include "m_argv.h"
 #include "d_main.h"
 #include "spi.h"
 #include "vga.h"
@@ -250,25 +249,6 @@ void I_InitGraphics(void)
     
     X_width = SCREENWIDTH * multiply;
     X_height = SCREENHEIGHT * multiply;
-
-    // check for command-line geometry
-    if ( (pnum=M_CheckParm("-geom")) ) // suggest parentheses around assignment
-    {
-	// warning: char format, different type arg 3,5
-	n = sscanf(myargv[pnum+1], "%c%d%c%d", &xsign, &x, &ysign, &y);
-	
-	if (n==2)
-	    x = y = 0;
-	else if (n==6)
-	{
-	    if (xsign == '-')
-		x = -x;
-	    if (ysign == '-')
-		y = -y;
-	}
-	else
-	    I_Error("bad -geom parameter");
-    }
 
     vga_set_mode(VGA_MODE_DOUBLE);
     

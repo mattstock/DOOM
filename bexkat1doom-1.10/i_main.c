@@ -24,22 +24,39 @@
 static const char
 rcsid[] = "$Id: i_main.c,v 1.4 1997/02/03 22:45:10 b1 Exp $";
 
+#include "vectors.h"
+#include "ff.h"
+#include "timers.h"
 
+extern void disk_timerproc(void);
+extern void init_vectors(void);
+
+INTERRUPT_HANDLER(timer3)
+static void timer3(void) {
+  disk_timerproc();
+  timers[1] = 0x8; // clear the interrupt
+  timers[7] += 100000; // reset timer3 interval
+}
 
 #include "doomdef.h"
 
-#include "m_argv.h"
 #include "d_main.h"
 
 int
 main
 ( int		argc,
   char**	argv ) 
-{ 
-    myargc = 0; 
-    myargv = NULL; 
- 
-    D_DoomMain (); 
-
-    return 0;
+{
+  // for filesystem code
+  // For 10MHz clock, we get to 100Hz we divide by 100000
+  cli();
+  init_vectors();
+  timers[7] = timers[12] + 100000; // 100Hz
+  set_interrupt_handler(intr_timer3, timer3);
+  timers[0] |= 0x88; // enable timer and interrupt
+  sti();
+  
+  D_DoomMain (); 
+  
+  return 0;
 } 
