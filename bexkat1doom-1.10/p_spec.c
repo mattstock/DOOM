@@ -1147,7 +1147,6 @@ void P_UpdateSpecials (void)
 			buttonlist[i].btexture;
 		    break;
 		}
-		S_StartSound((mobj_t *)&buttonlist[i].soundorg,sfx_swtchn);
 		memset(&buttonlist[i],0,sizeof(button_t));
 	    }
 	}

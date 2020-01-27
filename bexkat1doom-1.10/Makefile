@@ -7,7 +7,7 @@
 CC=  bexkat1-elf-gcc  # gcc or g++
 AS=  bexkat1-elf-as
 
-CFLAGS=-O -Wall -D__BIG_ENDIAN__ -DNORMALUNIX -Wunused-const-variable=0
+CFLAGS=-O -Wall -D__BIG_ENDIAN__ -DNORMALUNIX -Wunused-const-variable=0 -Wdiscarded-qualifiers -Wsequence-point
 LDFLAGS=-specs=max10.specs
 LIBS=-lm
 
@@ -19,7 +19,6 @@ OBJS=				\
 		$(O)/doomdef.o		\
 		$(O)/doomstat.o		\
 		$(O)/dstrings.o		\
-		$(O)/i_sound.o \
 		$(O)/i_video.o \
 		$(O)/i_net.o \
 		$(O)/i_system.o		\
@@ -72,10 +71,8 @@ OBJS=				\
 		$(O)/st_stuff.o		\
 		$(O)/hu_stuff.o		\
 		$(O)/hu_lib.o			\
-		$(O)/s_sound.o		\
 		$(O)/z_zone.o			\
 		$(O)/info.o				\
-		$(O)/sounds.o \
 		$(O)/ff.o \
 		$(O)/mmc.o \
 		$(O)/gettime.o \

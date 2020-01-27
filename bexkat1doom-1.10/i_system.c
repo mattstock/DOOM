@@ -102,22 +102,11 @@ int  I_GetTime (void)
 
 
 //
-// I_Init
-//
-void I_Init (void)
-{
-    I_InitSound();
-    //  I_InitGraphics();
-}
-
-//
 // I_Quit
 //
 void I_Quit (void)
 {
     D_QuitNetGame ();
-    I_ShutdownSound();
-    I_ShutdownMusic();
     M_SaveDefaults ();
     I_ShutdownGraphics();
     exit(0);

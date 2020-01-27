@@ -103,94 +103,33 @@ void F_StartFinale (void)
     // Okay - IWAD dependend stuff.
     // This has been changed severly, and
     //  some stuff might have changed in the process.
-    switch ( gamemode )
-    {
-
-      // DOOM 1 - E1, E3 or E4, but each nine missions
-      case shareware:
-      case registered:
-      case retail:
+    switch (gameepisode)
       {
-	S_ChangeMusic(mus_victor, true);
-	
-	switch (gameepisode)
-	{
-	  case 1:
-	    finaleflat = "FLOOR4_8";
-	    finaletext = e1text;
-	    break;
-	  case 2:
-	    finaleflat = "SFLR6_1";
-	    finaletext = e2text;
-	    break;
-	  case 3:
+      case 1:
+	finaleflat = "FLOOR4_8";
+	finaletext = e1text;
+	break;
+      case 2:
+	finaleflat = "SFLR6_1";
+	finaletext = e2text;
+	break;
+      case 3:
 	    finaleflat = "MFLR8_4";
 	    finaletext = e3text;
 	    break;
-	  case 4:
-	    finaleflat = "MFLR8_3";
-	    finaletext = e4text;
-	    break;
-	  default:
-	    // Ouch.
-	    break;
-	}
+      case 4:
+	finaleflat = "MFLR8_3";
+	finaletext = e4text;
+	break;
+      default:
+	// Ouch.
 	break;
       }
-      
-      // DOOM II and missions packs with E1, M34
-      case commercial:
-      {
-	  S_ChangeMusic(mus_read_m, true);
-
-	  switch (gamemap)
-	  {
-	    case 6:
-	      finaleflat = "SLIME16";
-	      finaletext = c1text;
-	      break;
-	    case 11:
-	      finaleflat = "RROCK14";
-	      finaletext = c2text;
-	      break;
-	    case 20:
-	      finaleflat = "RROCK07";
-	      finaletext = c3text;
-	      break;
-	    case 30:
-	      finaleflat = "RROCK17";
-	      finaletext = c4text;
-	      break;
-	    case 15:
-	      finaleflat = "RROCK13";
-	      finaletext = c5text;
-	      break;
-	    case 31:
-	      finaleflat = "RROCK19";
-	      finaletext = c6text;
-	      break;
-	    default:
-	      // Ouch.
-	      break;
-	  }
-	  break;
-      }	
-
-   
-      // Indeterminate.
-      default:
-	S_ChangeMusic(mus_read_m, true);
-	finaleflat = "F_SKY1"; // Not used anywhere else.
-	finaletext = c1text;  // FIXME - other text, music?
-	break;
-    }
     
     finalestage = 0;
     finalecount = 0;
 	
 }
-
-
 
 boolean F_Responder (event_t *event)
 {
@@ -243,8 +182,6 @@ void F_Ticker (void)
 	finalecount = 0;
 	finalestage = 1;
 	wipegamestate = -1;		// force a wipe
-	if (gameepisode == 3)
-	    S_StartMusic (mus_bunny);
     }
 }
 
@@ -385,7 +322,6 @@ void F_StartCast (void)
     castframes = 0;
     castonmelee = 0;
     castattacking = false;
-    S_ChangeMusic(mus_evil, true);
 }
 
 
@@ -395,7 +331,6 @@ void F_StartCast (void)
 void F_CastTicker (void)
 {
     int		st;
-    int		sfx;
 	
     if (--casttics > 0)
 	return;			// not time to change state yet
@@ -407,8 +342,6 @@ void F_CastTicker (void)
 	castdeath = false;
 	if (castorder[castnum].name == NULL)
 	    castnum = 0;
-	if (mobjinfo[castorder[castnum].type].seesound)
-	    S_StartSound (NULL, mobjinfo[castorder[castnum].type].seesound);
 	caststate = &states[mobjinfo[castorder[castnum].type].seestate];
 	castframes = 0;
     }
@@ -421,40 +354,6 @@ void F_CastTicker (void)
 	caststate = &states[st];
 	castframes++;
 	
-	// sound hacks....
-	switch (st)
-	{
-	  case S_PLAY_ATK1:	sfx = sfx_dshtgn; break;
-	  case S_POSS_ATK2:	sfx = sfx_pistol; break;
-	  case S_SPOS_ATK2:	sfx = sfx_shotgn; break;
-	  case S_VILE_ATK2:	sfx = sfx_vilatk; break;
-	  case S_SKEL_FIST2:	sfx = sfx_skeswg; break;
-	  case S_SKEL_FIST4:	sfx = sfx_skepch; break;
-	  case S_SKEL_MISS2:	sfx = sfx_skeatk; break;
-	  case S_FATT_ATK8:
-	  case S_FATT_ATK5:
-	  case S_FATT_ATK2:	sfx = sfx_firsht; break;
-	  case S_CPOS_ATK2:
-	  case S_CPOS_ATK3:
-	  case S_CPOS_ATK4:	sfx = sfx_shotgn; break;
-	  case S_TROO_ATK3:	sfx = sfx_claw; break;
-	  case S_SARG_ATK2:	sfx = sfx_sgtatk; break;
-	  case S_BOSS_ATK2:
-	  case S_BOS2_ATK2:
-	  case S_HEAD_ATK2:	sfx = sfx_firsht; break;
-	  case S_SKULL_ATK2:	sfx = sfx_sklatk; break;
-	  case S_SPID_ATK2:
-	  case S_SPID_ATK3:	sfx = sfx_shotgn; break;
-	  case S_BSPI_ATK2:	sfx = sfx_plasma; break;
-	  case S_CYBER_ATK2:
-	  case S_CYBER_ATK4:
-	  case S_CYBER_ATK6:	sfx = sfx_rlaunc; break;
-	  case S_PAIN_ATK3:	sfx = sfx_sklatk; break;
-	  default: sfx = 0; break;
-	}
-		
-	if (sfx)
-	    S_StartSound (NULL, sfx);
     }
 	
     if (castframes == 12)
@@ -513,8 +412,6 @@ boolean F_CastResponder (event_t* ev)
     casttics = caststate->tics;
     castframes = 0;
     castattacking = false;
-    if (mobjinfo[castorder[castnum].type].deathsound)
-	S_StartSound (NULL, mobjinfo[castorder[castnum].type].deathsound);
 	
     return true;
 }
@@ -685,7 +582,6 @@ void F_BunnyScroll (void)
 	stage = 6;
     if (stage > laststage)
     {
-	S_StartSound (NULL, sfx_pistol);
 	laststage = stage;
     }
 	
@@ -712,12 +608,8 @@ void F_Drawer (void)
 	switch (gameepisode)
 	{
 	  case 1:
-	    if ( gamemode == retail )
-	      V_DrawPatch (0,0,0,
+	    V_DrawPatch (0,0,0,
 			 W_CacheLumpName("CREDIT",PU_CACHE));
-	    else
-	      V_DrawPatch (0,0,0,
-			 W_CacheLumpName("HELP2",PU_CACHE));
 	    break;
 	  case 2:
 	    V_DrawPatch(0,0,0,

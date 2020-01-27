@@ -228,16 +228,6 @@ void I_SetPalette (byte* palette)
 
 void I_InitGraphics(void)
 {
-
-    int			n;
-    int			pnum;
-    int			x=0;
-    int			y=0;
-    
-    // warning: char format, different type arg
-    char		xsign=' ';
-    char		ysign=' ';
-    
     static int		firsttime=1;
 
     if (!firsttime)

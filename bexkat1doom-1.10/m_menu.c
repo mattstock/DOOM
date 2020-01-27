@@ -182,8 +182,6 @@ menu_t*	currentMenu;
 void M_NewGame(int choice);
 void M_Episode(int choice);
 void M_ChooseSkill(int choice);
-void M_LoadGame(int choice);
-void M_SaveGame(int choice);
 void M_Options(int choice);
 void M_EndGame(int choice);
 void M_ReadThis(int choice);
@@ -192,16 +190,11 @@ void M_QuitDOOM(int choice);
 
 void M_ChangeMessages(int choice);
 void M_ChangeSensitivity(int choice);
-void M_SfxVol(int choice);
-void M_MusicVol(int choice);
 void M_ChangeDetail(int choice);
 void M_SizeDisplay(int choice);
 void M_StartGame(int choice);
-void M_Sound(int choice);
 
 void M_FinishReadThis(int choice);
-void M_LoadSelect(int choice);
-void M_SaveSelect(int choice);
 void M_ReadSaveStrings(void);
 void M_QuickSave(void);
 void M_QuickLoad(void);
@@ -250,8 +243,6 @@ menuitem_t MainMenu[]=
 {
     {1,"M_NGAME",M_NewGame,'n'},
     {1,"M_OPTION",M_Options,'o'},
-    {1,"M_LOADG",M_LoadGame,'l'},
-    {1,"M_SAVEG",M_SaveGame,'s'},
     // Another hickup with Special edition.
     {1,"M_RDTHIS",M_ReadThis,'r'},
     {1,"M_QUITG",M_QuitDOOM,'q'}
@@ -356,8 +347,7 @@ menuitem_t OptionsMenu[]=
     {2,"M_SCRNSZ",	M_SizeDisplay,'s'},
     {-1,"",0},
     {2,"M_MSENS",	M_ChangeSensitivity,'m'},
-    {-1,"",0},
-    {1,"M_SVOL",	M_Sound,'s'}
+    {-1,"",0}
 };
 
 menu_t  OptionsDef =
@@ -416,328 +406,6 @@ menu_t  ReadDef2 =
 };
 
 //
-// SOUND VOLUME MENU
-//
-enum
-{
-    sfx_vol,
-    sfx_empty1,
-    music_vol,
-    sfx_empty2,
-    sound_end
-} sound_e;
-
-menuitem_t SoundMenu[]=
-{
-    {2,"M_SFXVOL",M_SfxVol,'s'},
-    {-1,"",0},
-    {2,"M_MUSVOL",M_MusicVol,'m'},
-    {-1,"",0}
-};
-
-menu_t  SoundDef =
-{
-    sound_end,
-    &OptionsDef,
-    SoundMenu,
-    M_DrawSound,
-    80,64,
-    0
-};
-
-//
-// LOAD GAME MENU
-//
-enum
-{
-    load1,
-    load2,
-    load3,
-    load4,
-    load5,
-    load6,
-    load_end
-} load_e;
-
-menuitem_t LoadMenu[]=
-{
-    {1,"", M_LoadSelect,'1'},
-    {1,"", M_LoadSelect,'2'},
-    {1,"", M_LoadSelect,'3'},
-    {1,"", M_LoadSelect,'4'},
-    {1,"", M_LoadSelect,'5'},
-    {1,"", M_LoadSelect,'6'}
-};
-
-menu_t  LoadDef =
-{
-    load_end,
-    &MainDef,
-    LoadMenu,
-    M_DrawLoad,
-    80,54,
-    0
-};
-
-//
-// SAVE GAME MENU
-//
-menuitem_t SaveMenu[]=
-{
-    {1,"", M_SaveSelect,'1'},
-    {1,"", M_SaveSelect,'2'},
-    {1,"", M_SaveSelect,'3'},
-    {1,"", M_SaveSelect,'4'},
-    {1,"", M_SaveSelect,'5'},
-    {1,"", M_SaveSelect,'6'}
-};
-
-menu_t  SaveDef =
-{
-    load_end,
-    &MainDef,
-    SaveMenu,
-    M_DrawSave,
-    80,54,
-    0
-};
-
-
-//
-// M_ReadSaveStrings
-//  read the strings from the savegame files
-//
-void M_ReadSaveStrings(void)
-{
-    int             handle;
-    int             i;
-    char    name[256];
-	
-    for (i = 0;i < load_end;i++)
-    {
-        sprintf(name,SAVEGAMENAME"%d.dsg",i);
-
-	handle = open (name, O_RDONLY | 0, 0666);
-	if (handle == -1)
-	{
-	    strcpy(&savegamestrings[i][0],EMPTYSTRING);
-	    LoadMenu[i].status = 0;
-	    continue;
-	}
-	read (handle, &savegamestrings[i], SAVESTRINGSIZE);
-	close (handle);
-	LoadMenu[i].status = 1;
-    }
-}
-
-
-//
-// M_LoadGame & Cie.
-//
-void M_DrawLoad(void)
-{
-    int             i;
-	
-    V_DrawPatchDirect (72,28,0,W_CacheLumpName("M_LOADG",PU_CACHE));
-    for (i = 0;i < load_end; i++)
-    {
-	M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
-	M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i]);
-    }
-}
-
-
-
-//
-// Draw border for the savegame description
-//
-void M_DrawSaveLoadBorder(int x,int y)
-{
-    int             i;
-	
-    V_DrawPatchDirect (x-8,y+7,0,W_CacheLumpName("M_LSLEFT",PU_CACHE));
-	
-    for (i = 0;i < 24;i++)
-    {
-	V_DrawPatchDirect (x,y+7,0,W_CacheLumpName("M_LSCNTR",PU_CACHE));
-	x += 8;
-    }
-
-    V_DrawPatchDirect (x,y+7,0,W_CacheLumpName("M_LSRGHT",PU_CACHE));
-}
-
-
-
-//
-// User wants to load this game
-//
-void M_LoadSelect(int choice)
-{
-    char    name[256];
-	
-    sprintf(name,SAVEGAMENAME"%d.dsg",choice);
-    G_LoadGame (name);
-    M_ClearMenus ();
-}
-
-//
-// Selected from DOOM menu
-//
-void M_LoadGame (int choice)
-{
-    if (netgame)
-    {
-	M_StartMessage(LOADNET,NULL,false);
-	return;
-    }
-	
-    M_SetupNextMenu(&LoadDef);
-    M_ReadSaveStrings();
-}
-
-
-//
-//  M_SaveGame & Cie.
-//
-void M_DrawSave(void)
-{
-    int             i;
-	
-    V_DrawPatchDirect (72,28,0,W_CacheLumpName("M_SAVEG",PU_CACHE));
-    for (i = 0;i < load_end; i++)
-    {
-	M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
-	M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i]);
-    }
-	
-    if (saveStringEnter)
-    {
-	i = M_StringWidth(savegamestrings[saveSlot]);
-	M_WriteText(LoadDef.x + i,LoadDef.y+LINEHEIGHT*saveSlot,"_");
-    }
-}
-
-//
-// M_Responder calls this when user is finished
-//
-void M_DoSave(int slot)
-{
-    G_SaveGame (slot,savegamestrings[slot]);
-    M_ClearMenus ();
-
-    // PICK QUICKSAVE SLOT YET?
-    if (quickSaveSlot == -2)
-	quickSaveSlot = slot;
-}
-
-//
-// User wants to save. Start string input for M_Responder
-//
-void M_SaveSelect(int choice)
-{
-    // we are going to be intercepting all chars
-    saveStringEnter = 1;
-    
-    saveSlot = choice;
-    strcpy(saveOldString,savegamestrings[choice]);
-    if (!strcmp(savegamestrings[choice],EMPTYSTRING))
-	savegamestrings[choice][0] = 0;
-    saveCharIndex = strlen(savegamestrings[choice]);
-}
-
-//
-// Selected from DOOM menu
-//
-void M_SaveGame (int choice)
-{
-    if (!usergame)
-    {
-	M_StartMessage(SAVEDEAD,NULL,false);
-	return;
-    }
-	
-    if (gamestate != GS_LEVEL)
-	return;
-	
-    M_SetupNextMenu(&SaveDef);
-    M_ReadSaveStrings();
-}
-
-
-
-//
-//      M_QuickSave
-//
-char    tempstring[80];
-
-void M_QuickSaveResponse(int ch)
-{
-    if (ch == 'y')
-    {
-	M_DoSave(quickSaveSlot);
-	S_StartSound(NULL,sfx_swtchx);
-    }
-}
-
-void M_QuickSave(void)
-{
-    if (!usergame)
-    {
-	S_StartSound(NULL,sfx_oof);
-	return;
-    }
-
-    if (gamestate != GS_LEVEL)
-	return;
-	
-    if (quickSaveSlot < 0)
-    {
-	M_StartControlPanel();
-	M_ReadSaveStrings();
-	M_SetupNextMenu(&SaveDef);
-	quickSaveSlot = -2;	// means to pick a slot now
-	return;
-    }
-    sprintf(tempstring,QSPROMPT,savegamestrings[quickSaveSlot]);
-    M_StartMessage(tempstring,M_QuickSaveResponse,true);
-}
-
-
-
-//
-// M_QuickLoad
-//
-void M_QuickLoadResponse(int ch)
-{
-    if (ch == 'y')
-    {
-	M_LoadSelect(quickSaveSlot);
-	S_StartSound(NULL,sfx_swtchx);
-    }
-}
-
-
-void M_QuickLoad(void)
-{
-    if (netgame)
-    {
-	M_StartMessage(QLOADNET,NULL,false);
-	return;
-    }
-	
-    if (quickSaveSlot < 0)
-    {
-	M_StartMessage(QSAVESPOT,NULL,false);
-	return;
-    }
-    sprintf(tempstring,QLPROMPT,savegamestrings[quickSaveSlot]);
-    M_StartMessage(tempstring,M_QuickLoadResponse,true);
-}
-
-
-
-
-//
 // Read This Menus
 // Had a "quick hack to fix romero bug"
 //
@@ -784,63 +452,6 @@ void M_DrawReadThis2(void)
     }
     return;
 }
-
-
-//
-// Change Sfx & Music volumes
-//
-void M_DrawSound(void)
-{
-    V_DrawPatchDirect (60,38,0,W_CacheLumpName("M_SVOL",PU_CACHE));
-
-    M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),
-		 16,snd_SfxVolume);
-
-    M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(music_vol+1),
-		 16,snd_MusicVolume);
-}
-
-void M_Sound(int choice)
-{
-    M_SetupNextMenu(&SoundDef);
-}
-
-void M_SfxVol(int choice)
-{
-    switch(choice)
-    {
-      case 0:
-	if (snd_SfxVolume)
-	    snd_SfxVolume--;
-	break;
-      case 1:
-	if (snd_SfxVolume < 15)
-	    snd_SfxVolume++;
-	break;
-    }
-	
-    S_SetSfxVolume(snd_SfxVolume /* *8 */);
-}
-
-void M_MusicVol(int choice)
-{
-    switch(choice)
-    {
-      case 0:
-	if (snd_MusicVolume)
-	    snd_MusicVolume--;
-	break;
-      case 1:
-	if (snd_MusicVolume < 15)
-	    snd_MusicVolume++;
-	break;
-    }
-	
-    S_SetMusicVolume(snd_MusicVolume /* *8 */);
-}
-
-
-
 
 //
 // M_DrawMainMenu
@@ -1000,7 +611,6 @@ void M_EndGame(int choice)
     choice = 0;
     if (!usergame)
     {
-	S_StartSound(NULL,sfx_oof);
 	return;
     }
 	
@@ -1075,10 +685,6 @@ void M_QuitResponse(int ch)
 	return;
     if (!netgame)
     {
-	if (gamemode == commercial)
-	    S_StartSound(NULL,quitsounds2[(gametic>>2)&7]);
-	else
-	    S_StartSound(NULL,quitsounds[(gametic>>2)&7]);
 	I_WaitVBL(105);
     }
     I_Quit ();
@@ -1440,49 +1046,6 @@ boolean M_Responder (event_t* ev)
     if (ch == -1)
 	return false;
 
-    
-    // Save Game string input
-    if (saveStringEnter)
-    {
-	switch(ch)
-	{
-	  case KEY_BACKSPACE:
-	    if (saveCharIndex > 0)
-	    {
-		saveCharIndex--;
-		savegamestrings[saveSlot][saveCharIndex] = 0;
-	    }
-	    break;
-				
-	  case KEY_ESCAPE:
-	    saveStringEnter = 0;
-	    strcpy(&savegamestrings[saveSlot][0],saveOldString);
-	    break;
-				
-	  case KEY_ENTER:
-	    saveStringEnter = 0;
-	    if (savegamestrings[saveSlot][0])
-		M_DoSave(saveSlot);
-	    break;
-				
-	  default:
-	    ch = toupper(ch);
-	    if (ch != 32)
-		if (ch-HU_FONTSTART < 0 || ch-HU_FONTSTART >= HU_FONTSIZE)
-		    break;
-	    if (ch >= 32 && ch <= 127 &&
-		saveCharIndex < SAVESTRINGSIZE-1 &&
-		M_StringWidth(savegamestrings[saveSlot]) <
-		(SAVESTRINGSIZE-2)*8)
-	    {
-		savegamestrings[saveSlot][saveCharIndex++] = ch;
-		savegamestrings[saveSlot][saveCharIndex] = 0;
-	    }
-	    break;
-	}
-	return true;
-    }
-    
     // Take care of any messages that need input
     if (messageToPrint)
     {
@@ -1496,17 +1059,9 @@ boolean M_Responder (event_t* ev)
 	    messageRoutine(ch);
 			
 	menuactive = false;
-	S_StartSound(NULL,sfx_swtchx);
 	return true;
     }
 	
-    if (devparm && ch == KEY_F1)
-    {
-	G_ScreenShot ();
-	return true;
-    }
-		
-    
     // F-Keys
     if (!menuactive)
 	switch(ch)
@@ -1515,14 +1070,12 @@ boolean M_Responder (event_t* ev)
 	    if (automapactive || chat_on)
 		return false;
 	    M_SizeDisplay(0);
-	    S_StartSound(NULL,sfx_stnmov);
 	    return true;
 				
 	  case KEY_EQUALS:        // Screen size up
 	    if (automapactive || chat_on)
 		return false;
 	    M_SizeDisplay(1);
-	    S_StartSound(NULL,sfx_stnmov);
 	    return true;
 				
 	  case KEY_F1:            // Help key
@@ -1534,55 +1087,21 @@ boolean M_Responder (event_t* ev)
 	      currentMenu = &ReadDef1;
 	    
 	    itemOn = 0;
-	    S_StartSound(NULL,sfx_swtchn);
-	    return true;
-				
-	  case KEY_F2:            // Save
-	    M_StartControlPanel();
-	    S_StartSound(NULL,sfx_swtchn);
-	    M_SaveGame(0);
-	    return true;
-				
-	  case KEY_F3:            // Load
-	    M_StartControlPanel();
-	    S_StartSound(NULL,sfx_swtchn);
-	    M_LoadGame(0);
-	    return true;
-				
-	  case KEY_F4:            // Sound Volume
-	    M_StartControlPanel ();
-	    currentMenu = &SoundDef;
-	    itemOn = sfx_vol;
-	    S_StartSound(NULL,sfx_swtchn);
 	    return true;
 				
 	  case KEY_F5:            // Detail toggle
 	    M_ChangeDetail(0);
-	    S_StartSound(NULL,sfx_swtchn);
-	    return true;
-				
-	  case KEY_F6:            // Quicksave
-	    S_StartSound(NULL,sfx_swtchn);
-	    M_QuickSave();
 	    return true;
 				
 	  case KEY_F7:            // End game
-	    S_StartSound(NULL,sfx_swtchn);
 	    M_EndGame(0);
 	    return true;
 				
 	  case KEY_F8:            // Toggle messages
 	    M_ChangeMessages(0);
-	    S_StartSound(NULL,sfx_swtchn);
-	    return true;
-				
-	  case KEY_F9:            // Quickload
-	    S_StartSound(NULL,sfx_swtchn);
-	    M_QuickLoad();
 	    return true;
 				
 	  case KEY_F10:           // Quit DOOM
-	    S_StartSound(NULL,sfx_swtchn);
 	    M_QuitDOOM(0);
 	    return true;
 				
@@ -1603,7 +1122,6 @@ boolean M_Responder (event_t* ev)
 	if (ch == KEY_ESCAPE)
 	{
 	    M_StartControlPanel ();
-	    S_StartSound(NULL,sfx_swtchn);
 	    return true;
 	}
 	return false;
@@ -1619,7 +1137,6 @@ boolean M_Responder (event_t* ev)
 	    if (itemOn+1 > currentMenu->numitems-1)
 		itemOn = 0;
 	    else itemOn++;
-	    S_StartSound(NULL,sfx_pstop);
 	} while(currentMenu->menuitems[itemOn].status==-1);
 	return true;
 		
@@ -1629,7 +1146,6 @@ boolean M_Responder (event_t* ev)
 	    if (!itemOn)
 		itemOn = currentMenu->numitems-1;
 	    else itemOn--;
-	    S_StartSound(NULL,sfx_pstop);
 	} while(currentMenu->menuitems[itemOn].status==-1);
 	return true;
 
@@ -1637,7 +1153,6 @@ boolean M_Responder (event_t* ev)
 	if (currentMenu->menuitems[itemOn].routine &&
 	    currentMenu->menuitems[itemOn].status == 2)
 	{
-	    S_StartSound(NULL,sfx_stnmov);
 	    currentMenu->menuitems[itemOn].routine(0);
 	}
 	return true;
@@ -1646,7 +1161,6 @@ boolean M_Responder (event_t* ev)
 	if (currentMenu->menuitems[itemOn].routine &&
 	    currentMenu->menuitems[itemOn].status == 2)
 	{
-	    S_StartSound(NULL,sfx_stnmov);
 	    currentMenu->menuitems[itemOn].routine(1);
 	}
 	return true;
@@ -1659,12 +1173,10 @@ boolean M_Responder (event_t* ev)
 	    if (currentMenu->menuitems[itemOn].status == 2)
 	    {
 		currentMenu->menuitems[itemOn].routine(1);      // right arrow
-		S_StartSound(NULL,sfx_stnmov);
 	    }
 	    else
 	    {
 		currentMenu->menuitems[itemOn].routine(itemOn);
-		S_StartSound(NULL,sfx_pistol);
 	    }
 	}
 	return true;
@@ -1672,7 +1184,6 @@ boolean M_Responder (event_t* ev)
       case KEY_ESCAPE:
 	currentMenu->lastOn = itemOn;
 	M_ClearMenus ();
-	S_StartSound(NULL,sfx_swtchx);
 	return true;
 		
       case KEY_BACKSPACE:
@@ -1681,7 +1192,6 @@ boolean M_Responder (event_t* ev)
 	{
 	    currentMenu = currentMenu->prevMenu;
 	    itemOn = currentMenu->lastOn;
-	    S_StartSound(NULL,sfx_swtchn);
 	}
 	return true;
 	
@@ -1690,14 +1200,12 @@ boolean M_Responder (event_t* ev)
 	    if (currentMenu->menuitems[i].alphaKey == ch)
 	    {
 		itemOn = i;
-		S_StartSound(NULL,sfx_pstop);
 		return true;
 	    }
 	for (i = 0;i <= itemOn;i++)
 	    if (currentMenu->menuitems[i].alphaKey == ch)
 	    {
 		itemOn = i;
-		S_StartSound(NULL,sfx_pstop);
 		return true;
 	    }
 	break;
@@ -1848,38 +1356,5 @@ void M_Init (void)
     messageString = NULL;
     messageLastMenuActive = menuactive;
     quickSaveSlot = -1;
-
-    // Here we could catch other version dependencies,
-    //  like HELP1/2, and four episodes.
-
-  
-    switch ( gamemode )
-    {
-      case commercial:
-	// This is used because DOOM 2 had only one HELP
-        //  page. I use CREDIT as second page now, but
-	//  kept this hack for educational purposes.
-	MainMenu[readthis] = MainMenu[quitdoom];
-	MainDef.numitems--;
-	MainDef.y += 8;
-	NewDef.prevMenu = &MainDef;
-	ReadDef1.routine = M_DrawReadThis1;
-	ReadDef1.x = 330;
-	ReadDef1.y = 165;
-	ReadMenu1[0].routine = M_FinishReadThis;
-	break;
-      case shareware:
-	// Episode 2 and 3 are handled,
-	//  branching to an ad screen.
-      case registered:
-	// We need to remove the fourth episode.
-	EpiDef.numitems--;
-	break;
-      case retail:
-	// We are fine.
-      default:
-	break;
-    }
-    
 }
 

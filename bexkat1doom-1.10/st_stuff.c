@@ -591,35 +591,6 @@ ST_Responder (event_t* ev)
 	
 	plyr->message = STSTR_KFAADDED;
       }
-      // 'mus' cheat for changing music
-      else if (cht_CheckCheat(&cheat_mus, ev->data1))
-      {
-	
-	char	buf[3];
-	int		musnum;
-	
-	plyr->message = STSTR_MUS;
-	cht_GetParam(&cheat_mus, buf);
-	
-	if (gamemode == commercial)
-	{
-	  musnum = mus_runnin + (buf[0]-'0')*10 + buf[1]-'0' - 1;
-	  
-	  if (((buf[0]-'0')*10 + buf[1]-'0') > 35)
-	    plyr->message = STSTR_NOMUS;
-	  else
-	    S_ChangeMusic(musnum, 1);
-	}
-	else
-	{
-	  musnum = mus_e1m1 + (buf[0]-'1')*9 + (buf[1]-'1');
-	  
-	  if (((buf[0]-'1')*9 + buf[1]-'1') > 31)
-	    plyr->message = STSTR_NOMUS;
-	  else
-	    S_ChangeMusic(musnum, 1);
-	}
-      }
       // Simplified, accepting both "noclip" and "idspispopd".
       // no clipping mode cheat
       else if ( cht_CheckCheat(&cheat_noclip, ev->data1) 

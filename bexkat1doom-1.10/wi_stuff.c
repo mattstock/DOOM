@@ -902,16 +902,12 @@ void WI_updateDeathmatchStats(void)
 	}
 	
 
-	S_StartSound(0, sfx_barexp);
 	dm_state = 4;
     }
 
     
     if (dm_state == 2)
     {
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-	
 	stillticking = false;
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -949,7 +945,6 @@ void WI_updateDeathmatchStats(void)
 	}
 	if (!stillticking)
 	{
-	    S_StartSound(0, sfx_barexp);
 	    dm_state++;
 	}
 
@@ -958,8 +953,6 @@ void WI_updateDeathmatchStats(void)
     {
 	if (acceleratestage)
 	{
-	    S_StartSound(0, sfx_slop);
-
 	    if ( gamemode == commercial)
 		WI_initNoState();
 	    else
@@ -1125,15 +1118,11 @@ void WI_updateNetgameStats(void)
 	    if (dofrags)
 		cnt_frags[i] = WI_fragSum(i);
 	}
-	S_StartSound(0, sfx_barexp);
 	ng_state = 10;
     }
 
     if (ng_state == 2)
     {
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	stillticking = false;
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -1151,15 +1140,11 @@ void WI_updateNetgameStats(void)
 	
 	if (!stillticking)
 	{
-	    S_StartSound(0, sfx_barexp);
 	    ng_state++;
 	}
     }
     else if (ng_state == 4)
     {
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	stillticking = false;
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -1175,15 +1160,11 @@ void WI_updateNetgameStats(void)
 	}
 	if (!stillticking)
 	{
-	    S_StartSound(0, sfx_barexp);
 	    ng_state++;
 	}
     }
     else if (ng_state == 6)
     {
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	stillticking = false;
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -1201,15 +1182,11 @@ void WI_updateNetgameStats(void)
 	
 	if (!stillticking)
 	{
-	    S_StartSound(0, sfx_barexp);
 	    ng_state += 1 + 2*!dofrags;
 	}
     }
     else if (ng_state == 8)
     {
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	stillticking = false;
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -1227,7 +1204,6 @@ void WI_updateNetgameStats(void)
 	
 	if (!stillticking)
 	{
-	    S_StartSound(0, sfx_pldeth);
 	    ng_state++;
 	}
     }
@@ -1235,11 +1211,7 @@ void WI_updateNetgameStats(void)
     {
 	if (acceleratestage)
 	{
-	    S_StartSound(0, sfx_sgcock);
-	    if ( gamemode == commercial )
-		WI_initNoState();
-	    else
-		WI_initShowNextLoc();
+	  WI_initShowNextLoc();
 	}
     }
     else if (ng_state & 1)
@@ -1336,7 +1308,6 @@ void WI_updateStats(void)
 	cnt_secret[0] = (plrs[me].ssecret * 100) / wbs->maxsecret;
 	cnt_time = plrs[me].stime / TICRATE;
 	cnt_par = wbs->partime / TICRATE;
-	S_StartSound(0, sfx_barexp);
 	sp_state = 10;
     }
 
@@ -1344,13 +1315,9 @@ void WI_updateStats(void)
     {
 	cnt_kills[0] += 2;
 
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	if (cnt_kills[0] >= (plrs[me].skills * 100) / wbs->maxkills)
 	{
 	    cnt_kills[0] = (plrs[me].skills * 100) / wbs->maxkills;
-	    S_StartSound(0, sfx_barexp);
 	    sp_state++;
 	}
     }
@@ -1358,13 +1325,9 @@ void WI_updateStats(void)
     {
 	cnt_items[0] += 2;
 
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	if (cnt_items[0] >= (plrs[me].sitems * 100) / wbs->maxitems)
 	{
 	    cnt_items[0] = (plrs[me].sitems * 100) / wbs->maxitems;
-	    S_StartSound(0, sfx_barexp);
 	    sp_state++;
 	}
     }
@@ -1372,21 +1335,15 @@ void WI_updateStats(void)
     {
 	cnt_secret[0] += 2;
 
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	if (cnt_secret[0] >= (plrs[me].ssecret * 100) / wbs->maxsecret)
 	{
 	    cnt_secret[0] = (plrs[me].ssecret * 100) / wbs->maxsecret;
-	    S_StartSound(0, sfx_barexp);
 	    sp_state++;
 	}
     }
 
     else if (sp_state == 8)
     {
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
 
 	cnt_time += 3;
 
@@ -1401,7 +1358,6 @@ void WI_updateStats(void)
 
 	    if (cnt_time >= plrs[me].stime / TICRATE)
 	    {
-		S_StartSound(0, sfx_barexp);
 		sp_state++;
 	    }
 	}
@@ -1410,12 +1366,7 @@ void WI_updateStats(void)
     {
 	if (acceleratestage)
 	{
-	    S_StartSound(0, sfx_sgcock);
-
-	    if (gamemode == commercial)
-		WI_initNoState();
-	    else
-		WI_initShowNextLoc();
+	  WI_initShowNextLoc();
 	}
     }
     else if (sp_state & 1)
@@ -1501,15 +1452,6 @@ void WI_Ticker(void)
     // counter for general background animation
     bcnt++;  
 
-    if (bcnt == 1)
-    {
-	// intermission music
-  	if ( gamemode == commercial )
-	  S_ChangeMusic(mus_dm2int, true);
-	else
-	  S_ChangeMusic(mus_inter, true); 
-    }
-
     WI_checkForAccelerate();
 
     switch (state)
@@ -1554,70 +1496,45 @@ void WI_loadData(void)
     V_DrawPatch(0, 0, 1, bg);
 
 
-    // UNUSED unsigned char *pic = screens[1];
-    // if (gamemode == commercial)
-    // {
-    // darken the background image
-    // while (pic != screens[1] + SCREENHEIGHT*SCREENWIDTH)
-    // {
-    //   *pic = colormaps[256*25 + *pic];
-    //   pic++;
-    // }
-    //}
+    lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * NUMMAPS,
+				   PU_STATIC, 0);
+    for (i=0 ; i<NUMMAPS ; i++)
+      {
+	sprintf(name, "WILV%d%d", wbs->epsd, i);
+	lnames[i] = W_CacheLumpName(name, PU_STATIC);
+      }
 
-    if (gamemode == commercial)
-    {
-	NUMCMAPS = 32;								
-	lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * NUMCMAPS,
-				       PU_STATIC, 0);
-	for (i=0 ; i<NUMCMAPS ; i++)
-	{								
-	    sprintf(name, "CWILV%2.2d", i);
-	    lnames[i] = W_CacheLumpName(name, PU_STATIC);
-	}					
-    }
-    else
-    {
-	lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * NUMMAPS,
-				       PU_STATIC, 0);
-	for (i=0 ; i<NUMMAPS ; i++)
-	{
-	    sprintf(name, "WILV%d%d", wbs->epsd, i);
-	    lnames[i] = W_CacheLumpName(name, PU_STATIC);
-	}
-
-	// you are here
-	yah[0] = W_CacheLumpName("WIURH0", PU_STATIC);
-
-	// you are here (alt.)
-	yah[1] = W_CacheLumpName("WIURH1", PU_STATIC);
-
-	// splat
-	splat = W_CacheLumpName("WISPLAT", PU_STATIC); 
-	
-	if (wbs->epsd < 3)
-	{
-	    for (j=0;j<NUMANIMS[wbs->epsd];j++)
-	    {
-		a = &anims[wbs->epsd][j];
-		for (i=0;i<a->nanims;i++)
-		{
-		    // MONDO HACK!
-		    if (wbs->epsd != 1 || j != 8) 
-		    {
-			// animations
-			sprintf(name, "WIA%d%.2d%.2d", wbs->epsd, j, i);  
-			a->p[i] = W_CacheLumpName(name, PU_STATIC);
-		    }
-		    else
-		    {
-			// HACK ALERT!
-			a->p[i] = anims[1][4].p[i]; 
-		    }
-		}
-	    }
-	}
-    }
+    // you are here
+    yah[0] = W_CacheLumpName("WIURH0", PU_STATIC);
+    
+    // you are here (alt.)
+    yah[1] = W_CacheLumpName("WIURH1", PU_STATIC);
+    
+    // splat
+    splat = W_CacheLumpName("WISPLAT", PU_STATIC); 
+    
+    if (wbs->epsd < 3)
+      {
+	for (j=0;j<NUMANIMS[wbs->epsd];j++)
+	  {
+	    a = &anims[wbs->epsd][j];
+	    for (i=0;i<a->nanims;i++)
+	      {
+		// MONDO HACK!
+		if (wbs->epsd != 1 || j != 8) 
+		  {
+		    // animations
+		    sprintf(name, "WIA%d%.2d%.2d", wbs->epsd, j, i);  
+		    a->p[i] = W_CacheLumpName(name, PU_STATIC);
+		  }
+		else
+		  {
+		    // HACK ALERT!
+		    a->p[i] = anims[1][4].p[i]; 
+		  }
+	      }
+	  }
+      }
 
     // More hacks on minus sign.
     wiminus = W_CacheLumpName("WIMINUS", PU_STATIC); 

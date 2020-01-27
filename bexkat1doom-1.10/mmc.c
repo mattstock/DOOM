@@ -100,8 +100,6 @@ void xmit_spi_multi (
 		     UINT cnt		/* Size of data block (must be multiple of 2) */
 		     )
 {
-  unsigned int res;
-
   do {
     spi_xfer(*p++);
     spi_xfer(*p++);
@@ -115,7 +113,6 @@ void rcvr_spi_multi (
 		     UINT cnt	/* Size of data block (must be multiple of 2) */
 		     )
 {
-  unsigned int res;
   do {
     *p++ = spi_xfer(0xff);
     *p++ = spi_xfer(0xff);
@@ -153,10 +150,8 @@ int wait_ready (	/* 1:Ready, 0:Timeout */
 static
 void deselect (void)
 {
-  BYTE b;
-
   CS_HIGH();		/* Set CS# high */
-  b = xchg_spi(0xFF);	/* Dummy clock (force DO hi-z for multiple slave SPI) */
+  xchg_spi(0xFF);	/* Dummy clock (force DO hi-z for multiple slave SPI) */
 }
 
 BYTE b;

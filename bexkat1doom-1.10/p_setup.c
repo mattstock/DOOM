@@ -603,19 +603,7 @@ P_SetupLevel
     // will be set by player think.
     players[consoleplayer].viewz = 1; 
 
-    // Make sure all sounds are stopped before Z_FreeTags.
-    S_Start ();			
-
-    
-#if 0 // UNUSED
-    if (debugfile)
-    {
-	Z_FreeTags (PU_LEVEL, MAXINT);
-	Z_FileDumpHeap (debugfile);
-    }
-    else
-#endif
-	Z_FreeTags (PU_LEVEL, PU_PURGELEVEL-1);
+    Z_FreeTags (PU_LEVEL, PU_PURGELEVEL-1);
 
 
     // UNUSED W_Profile ();
@@ -624,22 +612,11 @@ P_SetupLevel
     // if working with a devlopment map, reload it
     W_Reload ();			
 	   
-    // find map name
-    if ( gamemode == commercial)
-    {
-	if (map<10)
-	    sprintf (lumpname,"map0%i", map);
-	else
-	    sprintf (lumpname,"map%i", map);
-    }
-    else
-    {
-	lumpname[0] = 'E';
-	lumpname[1] = '0' + episode;
-	lumpname[2] = 'M';
-	lumpname[3] = '0' + map;
-	lumpname[4] = 0;
-    }
+    lumpname[0] = 'E';
+    lumpname[1] = '0' + episode;
+    lumpname[2] = 'M';
+    lumpname[3] = '0' + map;
+    lumpname[4] = 0;
 
     lumpnum = W_GetNumForName (lumpname);
 	

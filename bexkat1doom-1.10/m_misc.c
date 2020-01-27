@@ -202,9 +202,6 @@ extern int	screenblocks;
 
 extern int	showMessages;
 
-// machine-independent sound params
-extern	int	numChannels;
-
 
 #ifdef LINUX
 char*		mousetype;
@@ -227,8 +224,6 @@ typedef struct
 default_t	defaults[] =
 {
     {"mouse_sensitivity",&mouseSensitivity, 5},
-    {"sfx_volume",&snd_SfxVolume, 8},
-    {"music_volume",&snd_MusicVolume, 8},
     {"show_messages",&showMessages, 1},
     
 
@@ -264,10 +259,6 @@ default_t	defaults[] =
 
     {"screenblocks",&screenblocks, 9},
     {"detaillevel",&detailLevel, 0},
-
-    {"snd_channels",&numChannels, 3},
-
-
 
     {"usegamma",&usegamma, 0},
 

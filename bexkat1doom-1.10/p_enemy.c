@@ -162,7 +162,6 @@ P_NoiseAlert
 {
     soundtarget = target;
     validcount++;
-    P_RecursiveSound (emmiter->subsector->sector, 0);
 }
 
 
@@ -625,38 +624,6 @@ void A_Look (mobj_t* actor)
 		
     // go into chase state
   seeyou:
-    if (actor->info->seesound)
-    {
-	int		sound;
-		
-	switch (actor->info->seesound)
-	{
-	  case sfx_posit1:
-	  case sfx_posit2:
-	  case sfx_posit3:
-	    sound = sfx_posit1+P_Random()%3;
-	    break;
-
-	  case sfx_bgsit1:
-	  case sfx_bgsit2:
-	    sound = sfx_bgsit1+P_Random()%2;
-	    break;
-
-	  default:
-	    sound = actor->info->seesound;
-	    break;
-	}
-
-	if (actor->type==MT_SPIDER
-	    || actor->type == MT_CYBORG)
-	{
-	    // full volume
-	    S_StartSound (NULL, sound);
-	}
-	else
-	    S_StartSound (actor, sound);
-    }
-
     P_SetMobjState (actor, actor->info->seestate);
 }
 
@@ -722,9 +689,6 @@ void A_Chase (mobj_t*	actor)
     if (actor->info->meleestate
 	&& P_CheckMeleeRange (actor))
     {
-	if (actor->info->attacksound)
-	    S_StartSound (actor, actor->info->attacksound);
-
 	P_SetMobjState (actor, actor->info->meleestate);
 	return;
     }
@@ -764,12 +728,6 @@ void A_Chase (mobj_t*	actor)
 	P_NewChaseDir (actor);
     }
     
-    // make active sound
-    if (actor->info->activesound
-	&& P_Random () < 3)
-    {
-	S_StartSound (actor, actor->info->activesound);
-    }
 }
 
 
@@ -809,7 +767,6 @@ void A_PosAttack (mobj_t* actor)
     angle = actor->angle;
     slope = P_AimLineAttack (actor, angle, MISSILERANGE);
 
-    S_StartSound (actor, sfx_pistol);
     angle += (P_Random()-P_Random())<<20;
     damage = ((P_Random()%5)+1)*3;
     P_LineAttack (actor, angle, MISSILERANGE, slope, damage);
@@ -826,7 +783,6 @@ void A_SPosAttack (mobj_t* actor)
     if (!actor->target)
 	return;
 
-    S_StartSound (actor, sfx_shotgn);
     A_FaceTarget (actor);
     bangle = actor->angle;
     slope = P_AimLineAttack (actor, bangle, MISSILERANGE);
@@ -849,7 +805,6 @@ void A_CPosAttack (mobj_t* actor)
     if (!actor->target)
 	return;
 
-    S_StartSound (actor, sfx_shotgn);
     A_FaceTarget (actor);
     bangle = actor->angle;
     slope = P_AimLineAttack (actor, bangle, MISSILERANGE);
@@ -917,7 +872,6 @@ void A_TroopAttack (mobj_t* actor)
     A_FaceTarget (actor);
     if (P_CheckMeleeRange (actor))
     {
-	S_StartSound (actor, sfx_claw);
 	damage = (P_Random()%8+1)*3;
 	P_DamageMobj (actor->target, actor, actor, damage);
 	return;
@@ -982,7 +936,6 @@ void A_BruisAttack (mobj_t* actor)
 		
     if (P_CheckMeleeRange (actor))
     {
-	S_StartSound (actor, sfx_claw);
 	damage = (P_Random()%8+1)*10;
 	P_DamageMobj (actor->target, actor, actor, damage);
 	return;
@@ -1092,7 +1045,6 @@ void A_SkelWhoosh (mobj_t*	actor)
     if (!actor->target)
 	return;
     A_FaceTarget (actor);
-    S_StartSound (actor,sfx_skeswg);
 }
 
 void A_SkelFist (mobj_t*	actor)
@@ -1107,7 +1059,6 @@ void A_SkelFist (mobj_t*	actor)
     if (P_CheckMeleeRange (actor))
     {
 	damage = ((P_Random()%10)+1)*6;
-	S_StartSound (actor, sfx_skepch);
 	P_DamageMobj (actor->target, actor, actor, damage);
     }
 }
@@ -1204,7 +1155,6 @@ void A_VileChase (mobj_t* actor)
 		    actor->target = temp;
 					
 		    P_SetMobjState (actor, S_VILE_HEAL1);
-		    S_StartSound (corpsehit, sfx_slop);
 		    info = corpsehit->info;
 		    
 		    P_SetMobjState (corpsehit,info->raisestate);
@@ -1225,15 +1175,6 @@ void A_VileChase (mobj_t* actor)
 
 
 //
-// A_VileStart
-//
-void A_VileStart (mobj_t* actor)
-{
-    S_StartSound (actor, sfx_vilatk);
-}
-
-
-//
 // A_Fire
 // Keep fire in front of player unless out of sight
 //
@@ -1241,13 +1182,11 @@ void A_Fire (mobj_t* actor);
 
 void A_StartFire (mobj_t* actor)
 {
-    S_StartSound(actor,sfx_flamst);
     A_Fire(actor);
 }
 
 void A_FireCrackle (mobj_t* actor)
 {
-    S_StartSound(actor,sfx_flame);
     A_Fire(actor);
 }
 
@@ -1317,7 +1256,6 @@ void A_VileAttack (mobj_t* actor)
     if (!P_CheckSight (actor, actor->target) )
 	return;
 
-    S_StartSound (actor, sfx_barexp);
     P_DamageMobj (actor->target, actor, actor, 20);
     actor->target->momz = 1000*FRACUNIT/actor->target->info->mass;
 	
@@ -1348,7 +1286,6 @@ void A_VileAttack (mobj_t* actor)
 void A_FatRaise (mobj_t *actor)
 {
     A_FaceTarget (actor);
-    S_StartSound (actor, sfx_manatk);
 }
 
 
@@ -1425,7 +1362,6 @@ void A_SkullAttack (mobj_t* actor)
     dest = actor->target;	
     actor->flags |= MF_SKULLFLY;
 
-    S_StartSound (actor, actor->info->attacksound);
     A_FaceTarget (actor);
     an = actor->angle >> ANGLETOFINESHIFT;
     actor->momx = FixedMul (SKULLSPEED, finecosine[an]);
@@ -1523,61 +1459,6 @@ void A_PainDie (mobj_t* actor)
     A_PainShootSkull (actor, actor->angle+ANG180);
     A_PainShootSkull (actor, actor->angle+ANG270);
 }
-
-
-
-
-
-
-void A_Scream (mobj_t* actor)
-{
-    int		sound;
-	
-    switch (actor->info->deathsound)
-    {
-      case 0:
-	return;
-		
-      case sfx_podth1:
-      case sfx_podth2:
-      case sfx_podth3:
-	sound = sfx_podth1 + P_Random ()%3;
-	break;
-		
-      case sfx_bgdth1:
-      case sfx_bgdth2:
-	sound = sfx_bgdth1 + P_Random ()%2;
-	break;
-	
-      default:
-	sound = actor->info->deathsound;
-	break;
-    }
-
-    // Check for bosses.
-    if (actor->type==MT_SPIDER
-	|| actor->type == MT_CYBORG)
-    {
-	// full volume
-	S_StartSound (NULL, sound);
-    }
-    else
-	S_StartSound (actor, sound);
-}
-
-
-void A_XScream (mobj_t* actor)
-{
-    S_StartSound (actor, sfx_slop);	
-}
-
-void A_Pain (mobj_t* actor)
-{
-    if (actor->info->painsound)
-	S_StartSound (actor, actor->info->painsound);	
-}
-
-
 
 void A_Fall (mobj_t *actor)
 {
@@ -1755,36 +1636,17 @@ void A_BossDeath (mobj_t* mo)
 
 void A_Hoof (mobj_t* mo)
 {
-    S_StartSound (mo, sfx_hoof);
     A_Chase (mo);
 }
 
 void A_Metal (mobj_t* mo)
 {
-    S_StartSound (mo, sfx_metal);
     A_Chase (mo);
 }
 
 void A_BabyMetal (mobj_t* mo)
 {
-    S_StartSound (mo, sfx_bspwlk);
     A_Chase (mo);
-}
-
-void
-A_OpenShotgun2
-( player_t*	player,
-  pspdef_t*	psp )
-{
-    S_StartSound (player->mo, sfx_dbopn);
-}
-
-void
-A_LoadShotgun2
-( player_t*	player,
-  pspdef_t*	psp )
-{
-    S_StartSound (player->mo, sfx_dbload);
 }
 
 void
@@ -1797,11 +1659,8 @@ A_CloseShotgun2
 ( player_t*	player,
   pspdef_t*	psp )
 {
-    S_StartSound (player->mo, sfx_dbcls);
     A_ReFire(player,psp);
 }
-
-
 
 mobj_t*		braintargets[32];
 int		numbraintargets;
@@ -1833,14 +1692,8 @@ void A_BrainAwake (mobj_t* mo)
 	}
     }
 	
-    S_StartSound (NULL,sfx_bossit);
 }
 
-
-void A_BrainPain (mobj_t*	mo)
-{
-    S_StartSound (NULL,sfx_bospn);
-}
 
 
 void A_BrainScream (mobj_t*	mo)
@@ -1864,7 +1717,6 @@ void A_BrainScream (mobj_t*	mo)
 	    th->tics = 1;
     }
 	
-    S_StartSound (NULL,sfx_bosdth);
 }
 
 
@@ -1916,7 +1768,6 @@ void A_BrainSpit (mobj_t*	mo)
     newmobj->reactiontime =
 	((targ->y - mo->y)/newmobj->momy) / newmobj->state->tics;
 
-    S_StartSound(NULL, sfx_bospit);
 }
 
 
@@ -1926,14 +1777,12 @@ void A_SpawnFly (mobj_t* mo);
 // travelling cube sound
 void A_SpawnSound (mobj_t* mo)	
 {
-    S_StartSound (mo,sfx_boscub);
     A_SpawnFly(mo);
 }
 
 void A_SpawnFly (mobj_t* mo)
 {
     mobj_t*	newmobj;
-    mobj_t*	fog;
     mobj_t*	targ;
     int		r;
     mobjtype_t	type;
@@ -1944,8 +1793,7 @@ void A_SpawnFly (mobj_t* mo)
     targ = mo->target;
 
     // First spawn teleport fog.
-    fog = P_SpawnMobj (targ->x, targ->y, targ->z, MT_SPAWNFIRE);
-    S_StartSound (fog, sfx_telept);
+    P_SpawnMobj (targ->x, targ->y, targ->z, MT_SPAWNFIRE);
 
     // Randomly select monster to spawn.
     r = P_Random ();
@@ -1984,22 +1832,4 @@ void A_SpawnFly (mobj_t* mo)
 
     // remove self (i.e., cube).
     P_RemoveMobj (mo);
-}
-
-
-
-void A_PlayerScream (mobj_t* mo)
-{
-    // Default death sound.
-    int		sound = sfx_pldeth;
-	
-    if ( (gamemode == commercial)
-	&& 	(mo->health < -50))
-    {
-	// IF THE PLAYER DIES
-	// LESS THAN -50% WITHOUT GIBBING
-	sound = sfx_pdiehi;
-    }
-    
-    S_StartSound (mo, sound);
 }
