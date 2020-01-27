@@ -35,13 +35,10 @@ rcsid[] = "$Id: hu_stuff.c,v 1.4 1997/02/03 16:47:52 b1 Exp $";
 #include "hu_lib.h"
 #include "w_wad.h"
 
-#include "s_sound.h"
-
 #include "doomstat.h"
 
 // Data.
 #include "dstrings.h"
-#include "sounds.h"
 
 //
 // Locally used constants, shortcuts.

@@ -38,12 +38,8 @@ rcsid[] = "$Id: wi_stuff.c,v 1.7 1997/02/03 22:45:13 b1 Exp $";
 #include "g_game.h"
 
 #include "r_local.h"
-#include "s_sound.h"
 
 #include "doomstat.h"
-
-// Data.
-#include "sounds.h"
 
 // Needs access to LFB.
 #include "v_video.h"

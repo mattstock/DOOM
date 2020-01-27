@@ -45,12 +45,9 @@ static const char rcsid[] = "$Id: d_main.c,v 1.8 1997/02/03 22:45:09 b1 Exp $";
 #include "doomstat.h"
 
 #include "dstrings.h"
-#include "sounds.h"
-
 
 #include "z_zone.h"
 #include "w_wad.h"
-#include "s_sound.h"
 #include "v_video.h"
 
 #include "f_finale.h"
@@ -60,7 +57,6 @@ static const char rcsid[] = "$Id: d_main.c,v 1.8 1997/02/03 22:45:09 b1 Exp $";
 #include "m_menu.h"
 
 #include "i_system.h"
-#include "i_sound.h"
 #include "i_video.h"
 
 #include "g_game.h"

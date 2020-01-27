@@ -55,11 +55,8 @@ rcsid[] = "$Id: g_game.c,v 1.8 1997/02/03 22:45:09 b1 Exp $";
 
 #include "p_local.h" 
 
-#include "s_sound.h"
-
 // Data.
 #include "dstrings.h"
-#include "sounds.h"
 
 // SKY handling - still the wrong place.
 #include "r_data.h"

@@ -33,11 +33,9 @@ rcsid[] = "$Id: f_finale.c,v 1.5 1997/02/03 21:26:34 b1 Exp $";
 #include "z_zone.h"
 #include "v_video.h"
 #include "w_wad.h"
-#include "s_sound.h"
 
 // Data.
 #include "dstrings.h"
-#include "sounds.h"
 
 #include "doomstat.h"
 #include "r_state.h"

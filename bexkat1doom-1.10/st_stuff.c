@@ -49,8 +49,6 @@ rcsid[] = "$Id: st_stuff.c,v 1.6 1997/02/03 22:45:13 b1 Exp $";
 #include "am_map.h"
 #include "m_cheat.h"
 
-#include "s_sound.h"
-
 // Needs access to LFB.
 #include "v_video.h"
 
@@ -59,7 +57,6 @@ rcsid[] = "$Id: st_stuff.c,v 1.6 1997/02/03 22:45:13 b1 Exp $";
 
 // Data.
 #include "dstrings.h"
-#include "sounds.h"
 
 //
 // STATUS BAR DATA
