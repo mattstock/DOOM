@@ -406,21 +406,8 @@ menu_t  ReadDef2 =
 //
 void M_DrawReadThis1(void)
 {
-    inhelpscreens = true;
-    switch ( gamemode )
-    {
-      case commercial:
-	V_DrawPatchDirect (0,0,0,W_CacheLumpName("HELP",PU_CACHE));
-	break;
-      case shareware:
-      case registered:
-      case retail:
-	V_DrawPatchDirect (0,0,0,W_CacheLumpName("HELP1",PU_CACHE));
-	break;
-      default:
-	break;
-    }
-    return;
+  inhelpscreens = true;
+  V_DrawPatchDirect (0,0,0,W_CacheLumpName("HELP1",PU_CACHE));
 }
 
 
@@ -431,21 +418,7 @@ void M_DrawReadThis1(void)
 void M_DrawReadThis2(void)
 {
     inhelpscreens = true;
-    switch ( gamemode )
-    {
-      case retail:
-      case commercial:
-	// This hack keeps us from having to change menus.
-	V_DrawPatchDirect (0,0,0,W_CacheLumpName("CREDIT",PU_CACHE));
-	break;
-      case shareware:
-      case registered:
-	V_DrawPatchDirect (0,0,0,W_CacheLumpName("HELP2",PU_CACHE));
-	break;
-      default:
-	break;
-    }
-    return;
+    V_DrawPatchDirect (0,0,0,W_CacheLumpName("CREDIT",PU_CACHE));
 }
 
 //
@@ -476,10 +449,7 @@ void M_NewGame(int choice)
 	return;
     }
 	
-    if ( gamemode == commercial )
-	M_SetupNextMenu(&NewDef);
-    else
-	M_SetupNextMenu(&EpiDef);
+    M_SetupNextMenu(&EpiDef);
 }
 
 
@@ -516,23 +486,6 @@ void M_ChooseSkill(int choice)
 
 void M_Episode(int choice)
 {
-    if ( (gamemode == shareware)
-	 && choice)
-    {
-	M_StartMessage(SWSTRING,NULL,false);
-	M_SetupNextMenu(&ReadDef1);
-	return;
-    }
-
-    // Yet another hack...
-    if ( (gamemode == registered)
-	 && (choice > 2))
-    {
-      fprintf( stderr,
-	       "M_Episode: 4th episode requires UltimateDOOM\n");
-      choice = 0;
-    }
-	 
     epi = choice;
     M_SetupNextMenu(&NewDef);
 }
@@ -1047,10 +1000,7 @@ boolean M_Responder (event_t* ev)
 	  case KEY_F1:            // Help key
 	    M_StartControlPanel ();
 
-	    if ( gamemode == retail )
-	      currentMenu = &ReadDef2;
-	    else
-	      currentMenu = &ReadDef1;
+	    currentMenu = &ReadDef2;
 	    
 	    itemOn = 0;
 	    return true;

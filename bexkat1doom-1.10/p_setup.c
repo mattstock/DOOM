@@ -312,25 +312,21 @@ void P_LoadThings (int lump)
     {
 	spawn = true;
 
-	// Do not spawn cool, new monsters if !commercial
-	if ( gamemode != commercial)
-	{
-	    switch(mt->type)
-	    {
-	      case 68:	// Arachnotron
-	      case 64:	// Archvile
-	      case 88:	// Boss Brain
-	      case 89:	// Boss Shooter
-	      case 69:	// Hell Knight
-	      case 67:	// Mancubus
-	      case 71:	// Pain Elemental
-	      case 65:	// Former Human Commando
-	      case 66:	// Revenant
-	      case 84:	// Wolf SS
-		spawn = false;
-		break;
-	    }
-	}
+	switch(mt->type)
+	  {
+	  case 68:	// Arachnotron
+	  case 64:	// Archvile
+	  case 88:	// Boss Brain
+	  case 89:	// Boss Shooter
+	  case 69:	// Hell Knight
+	  case 67:	// Mancubus
+	  case 71:	// Pain Elemental
+	  case 65:	// Former Human Commando
+	  case 66:	// Revenant
+	  case 84:	// Wolf SS
+	    spawn = false;
+	    break;
+	  }
 	if (spawn == false)
 	    break;
 

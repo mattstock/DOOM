@@ -157,11 +157,6 @@ void D_ProcessEvents (void)
 {
     event_t*	ev;
 	
-    // IF STORE DEMO, DO NOT ACCEPT INPUT
-    if ( ( gamemode == commercial )
-	 && (W_CheckNumForName("map01")<0) )
-      return;
-	
     for ( ; eventtail != eventhead ; eventtail = (++eventtail)&(MAXEVENTS-1) )
     {
 	ev = &events[eventtail];
@@ -432,18 +427,12 @@ void D_AdvanceDemo (void)
     paused = false;
     gameaction = ga_nothing;
 
-    if ( gamemode == retail )
-      demosequence = (demosequence+1)%7;
-    else
-      demosequence = (demosequence+1)%6;
+    demosequence = (demosequence+1)%7;
     
     switch (demosequence)
     {
       case 0:
-	if ( gamemode == commercial )
-	    pagetic = 35 * 11;
-	else
-	    pagetic = 170;
+	pagetic = 170;
 	gamestate = GS_DEMOSCREEN;
 	pagename = "TITLEPIC";
 	break;
@@ -460,20 +449,8 @@ void D_AdvanceDemo (void)
 	break;
       case 4:
 	gamestate = GS_DEMOSCREEN;
-	if ( gamemode == commercial)
-	{
-	    pagetic = 35 * 11;
-	    pagename = "TITLEPIC";
-	}
-	else
-	{
-	    pagetic = 200;
-
-	    if ( gamemode == retail )
-	      pagename = "CREDIT";
-	    else
-	      pagename = "HELP2";
-	}
+	pagetic = 200;
+	pagename = "CREDIT";
 	break;
       case 5:
 	G_DeferedPlayDemo ("demo3");
@@ -532,7 +509,6 @@ void IdentifyVersion (void)
 {
   static char	doomwad[] = "/doom.wad";
   // Registered.
-  gamemode = retail;
   D_AddFile (doomwad);
 }
 

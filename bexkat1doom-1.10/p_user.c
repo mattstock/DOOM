@@ -295,23 +295,13 @@ void P_PlayerThink (player_t* player)
 	    newweapon = wp_chainsaw;
 	}
 	
-	if ( (gamemode == commercial)
-	    && newweapon == wp_shotgun 
-	    && player->weaponowned[wp_supershotgun]
-	    && player->readyweapon != wp_supershotgun)
-	{
-	    newweapon = wp_supershotgun;
-	}
-	
-
 	if (player->weaponowned[newweapon]
 	    && newweapon != player->readyweapon)
 	{
 	    // Do not go to plasma or BFG in shareware,
 	    //  even if cheated.
 	    if ((newweapon != wp_plasma
-		 && newweapon != wp_bfg)
-		|| (gamemode != shareware) )
+		 && newweapon != wp_bfg) )
 	    {
 		player->pendingweapon = newweapon;
 	    }

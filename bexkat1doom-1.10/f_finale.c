@@ -145,24 +145,6 @@ void F_Ticker (void)
 {
     int		i;
     
-    // check for skipping
-    if ( (gamemode == commercial)
-      && ( finalecount > 50) )
-    {
-      // go on to the next level
-      for (i=0 ; i<MAXPLAYERS ; i++)
-	if (players[i].cmd.buttons)
-	  break;
-				
-      if (i < MAXPLAYERS)
-      {	
-	if (gamemap == 30)
-	  F_StartCast ();
-	else
-	  gameaction = ga_worlddone;
-      }
-    }
-    
     // advance animation
     finalecount++;
 	
@@ -172,9 +154,6 @@ void F_Ticker (void)
 	return;
     }
 	
-    if ( gamemode == commercial)
-	return;
-		
     if (!finalestage && finalecount>strlen (finaletext)*TEXTSPEED + TEXTWAIT)
     {
 	finalecount = 0;
@@ -182,8 +161,6 @@ void F_Ticker (void)
 	wipegamestate = -1;		// force a wipe
     }
 }
-
-
 
 //
 // F_TextWrite

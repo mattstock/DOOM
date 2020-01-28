@@ -747,10 +747,7 @@ void R_FillBackScreen (void)
     if (scaledviewwidth == 320)
 	return;
 	
-    if ( gamemode == commercial)
-	name = name2;
-    else
-	name = name1;
+    name = name1;
     
     src = W_CacheLumpName (name, PU_CACHE); 
     dest = screens[1]; 

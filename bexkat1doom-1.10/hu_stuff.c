@@ -437,29 +437,7 @@ void HU_Start(void)
 		       hu_font,
 		       HU_FONTSTART);
     
-    switch ( gamemode )
-    {
-      case shareware:
-      case registered:
-      case retail:
-	s = HU_TITLE;
-	break;
-
-/* FIXME
-      case pack_plut:
-	s = HU_TITLEP;
-	break;
-      case pack_tnt:
-	s = HU_TITLET;
-	break;
-*/
-	
-      case commercial:
-      default:
-	 s = HU_TITLE2;
-	 break;
-    }
-    
+    s = HU_TITLE;
     while (*s)
 	HUlib_addCharToTextLine(&w_title, *(s++));
 
