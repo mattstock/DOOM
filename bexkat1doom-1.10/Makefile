@@ -7,7 +7,7 @@
 CC=  bexkat1-elf-gcc  # gcc or g++
 AS=  bexkat1-elf-as
 
-CFLAGS=-O -Wall -D__BIG_ENDIAN__ -DNORMALUNIX -Wunused-const-variable=0 -Wdiscarded-qualifiers -Wsequence-point
+CFLAGS=-Os -Wall -D__BIG_ENDIAN__ -DNORMALUNIX -Wunused-const-variable=0 -Wdiscarded-qualifiers -Wsequence-point
 LDFLAGS=-specs=max10.specs
 LIBS=-lm
 
