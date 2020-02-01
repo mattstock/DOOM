@@ -244,13 +244,11 @@ void I_InitGraphics(void)
 	return;
     firsttime = 0;
 
-    vga_set_mode(VGA_MODE_DOUBLE);
+    vga_set_mode(VGA_MODE_GRAPHICS_13H);
     
     X_width = SCREENWIDTH * multiply;
     X_height = SCREENHEIGHT * multiply;
 
-    vga_set_mode(VGA_MODE_DOUBLE);
-    
     screens[0] = (unsigned char *)malloc(SCREENWIDTH*SCREENHEIGHT);
 }
 
