@@ -4,10 +4,11 @@
 #
 # $Log:$
 #
-CC=  bexkat1-elf-gcc  # gcc or g++
+CC=bexkat1-elf-gcc  # gcc or g++
+AS=bexkat1-elf-as
 
-CFLAGS=-O -Wall -D__BIG_ENDIAN__ -DNORMALUNIX # -DUSEASM 
-LDFLAGS=-specs=de2.specs
+CFLAGS=-O -Wall -D__BIG_ENDIAN__ -DNORMALUNIX -Wunused-const-variable=0
+LDFLAGS=-specs=max10.specs
 LIBS=-lm
 
 # subdirectory for objects

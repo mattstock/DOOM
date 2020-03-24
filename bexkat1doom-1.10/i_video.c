@@ -171,7 +171,7 @@ void I_GetEvent(void)
 //
 void I_StartTic (void)
 {
-  while (keyboard_count())
+  while (keyboard_ready())
     I_GetEvent();
 }
 
@@ -246,7 +246,7 @@ void I_InitGraphics(void)
 	return;
     firsttime = 0;
 
-    vga_set_mode(VGA_MODE_DOUBLE);
+    vga_set_mode(VGA_MODE_320x200_COLOR);
     
     X_width = SCREENWIDTH * multiply;
     X_height = SCREENHEIGHT * multiply;
@@ -270,8 +270,6 @@ void I_InitGraphics(void)
 	    I_Error("bad -geom parameter");
     }
 
-    vga_set_mode(VGA_MODE_DOUBLE);
-    
     screens[0] = (unsigned char *)malloc(SCREENWIDTH*SCREENHEIGHT);
 }
 
