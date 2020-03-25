@@ -354,23 +354,29 @@ void D_DoomLoop (void)
 {
     if (demorecording)
 	G_BeginRecording ();
-		
+
     I_InitGraphics ();
 
     while (1)
     {
       // frame syncronous IO operations
+      printf("I_StartFrame()\n");
       I_StartFrame ();                
 
       // process one or more tics
       if (singletics)
 	{
+	  printf("I_StartTic()\n");
 	  I_StartTic ();
+	  printf("D_ProcessEvents()\n");
 	  D_ProcessEvents ();
+	  printf("G_BuildTiccmd()\n");
 	  G_BuildTiccmd (&netcmds[consoleplayer][maketic%BACKUPTICS]);
 	  if (advancedemo)
 	    D_DoAdvanceDemo ();
+	  printf("M_Ticker()\n");
 	  M_Ticker ();
+	  printf("G_Ticker()\n");
 	  G_Ticker ();
 	  gametic++;
 	  maketic++;
@@ -380,9 +386,11 @@ void D_DoomLoop (void)
 	  TryRunTics (); // will run at least one tic
 	}
 		
+      printf("S_UpdateSounds()\n");
       S_UpdateSounds (players[consoleplayer].mo);// move positional sounds
 
       // Update display, next frame, with current state.
+      printf("D_Display()\n");
       D_Display ();
       
       // Needs I_UpdateSounds() or I_SubmitSounds()

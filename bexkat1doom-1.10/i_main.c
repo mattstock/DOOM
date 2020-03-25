@@ -35,7 +35,7 @@ INTERRUPT_HANDLER(timer3)
 static void timer3(void) {
   disk_timerproc();
   timers[1] = 0x8; // clear the interrupt
-  timers[7] += 100000; // reset timer3 interval
+  timers[7] += 500000; // reset timer3 interval
 }
 
 #include "doomdef.h"
@@ -47,11 +47,9 @@ main
 ( int		argc,
   char**	argv ) 
 {
-  // for filesystem code
-  // For 10MHz clock, we get to 100Hz we divide by 100000
   cli();
   init_vectors();
-  timers[7] = timers[12] + 100000; // 100Hz
+  timers[7] = timers[12] + 500000; // 100Hz
   set_interrupt_handler(intr_timer3, timer3);
   timers[0] |= 0x88; // enable timer and interrupt
   sti();
