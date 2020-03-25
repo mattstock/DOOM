@@ -40,8 +40,6 @@ rcsid[] = "$Id: p_inter.c,v 1.4 1997/02/03 22:45:11 b1 Exp $";
 
 #include "p_local.h"
 
-#include "s_sound.h"
-
 #ifdef __GNUG__
 #pragma implementation "p_inter.h"
 #endif
@@ -190,8 +188,6 @@ P_GiveWeapon
 	    P_GiveAmmo (player, weaponinfo[weapon].ammo, 2);
 	player->pendingweapon = weapon;
 
-	if (player == &players[consoleplayer])
-	    S_StartSound (NULL, sfx_wpnup);
 	return false;
     }
 	
@@ -656,8 +652,6 @@ P_TouchSpecialThing
 	player->itemcount++;
     P_RemoveMobj (special);
     player->bonuscount += BONUSADD;
-    if (player == &players[consoleplayer])
-	S_StartSound (NULL, sound);
 }
 
 
@@ -728,9 +722,6 @@ P_KillMobj
     if (target->tics < 1)
 	target->tics = 1;
 		
-    //	I_StartSound (&actor->r, actor->info->deathsound);
-
-
     // Drop stuff.
     // This determines the kind of object spawned
     // during the death frame of a thing.

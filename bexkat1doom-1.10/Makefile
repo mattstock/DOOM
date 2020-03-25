@@ -20,7 +20,6 @@ OBJS=				\
 		$(O)/doomstat.o		\
 		$(O)/dstrings.o		\
 		$(O)/i_system.o		\
-		$(O)/i_sound.o		\
 		$(O)/i_video.o		\
 		$(O)/i_net.o			\
 		$(O)/tables.o			\
@@ -72,7 +71,6 @@ OBJS=				\
 		$(O)/st_stuff.o		\
 		$(O)/hu_stuff.o		\
 		$(O)/hu_lib.o			\
-		$(O)/s_sound.o		\
 		$(O)/z_zone.o			\
 		$(O)/info.o				\
 		$(O)/sounds.o

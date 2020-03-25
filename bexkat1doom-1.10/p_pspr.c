@@ -31,7 +31,6 @@ rcsid[] = "$Id: p_pspr.c,v 1.5 1997/02/03 22:45:12 b1 Exp $";
 
 #include "m_random.h"
 #include "p_local.h"
-#include "s_sound.h"
 
 // State.
 #include "doomstat.h"
@@ -141,9 +140,6 @@ void P_BringUpWeapon (player_t* player)
 	
     if (player->pendingweapon == wp_nochange)
 	player->pendingweapon = player->readyweapon;
-		
-    if (player->pendingweapon == wp_chainsaw)
-	S_StartSound (player->mo, sfx_sawup);
 		
     newstate = weaponinfo[player->pendingweapon].upstate;
 
@@ -293,11 +289,6 @@ A_WeaponReady
 	P_SetMobjState (player->mo, S_PLAY);
     }
     
-    if (player->readyweapon == wp_chainsaw
-	&& psp->state == &states[S_SAW])
-    {
-	S_StartSound (player->mo, sfx_sawidl);
-    }
     
     // check for change
     //  if player is dead, put the weapon away
@@ -486,7 +477,6 @@ A_Punch
     // turn to face target
     if (linetarget)
     {
-	S_StartSound (player->mo, sfx_punch);
 	player->mo->angle = R_PointToAngle2 (player->mo->x,
 					     player->mo->y,
 					     linetarget->x,
@@ -517,10 +507,8 @@ A_Saw
 
     if (!linetarget)
     {
-	S_StartSound (player->mo, sfx_sawful);
 	return;
     }
-    S_StartSound (player->mo, sfx_sawhit);
 	
     // turn to face target
     angle = R_PointToAngle2 (player->mo->x, player->mo->y,
@@ -648,8 +636,6 @@ A_FirePistol
 ( player_t*	player,
   pspdef_t*	psp ) 
 {
-    S_StartSound (player->mo, sfx_pistol);
-
     P_SetMobjState (player->mo, S_PLAY_ATK2);
     player->ammo[weaponinfo[player->readyweapon].ammo]--;
 
@@ -672,7 +658,6 @@ A_FireShotgun
 {
     int		i;
 	
-    S_StartSound (player->mo, sfx_shotgn);
     P_SetMobjState (player->mo, S_PLAY_ATK2);
 
     player->ammo[weaponinfo[player->readyweapon].ammo]--;
@@ -702,7 +687,6 @@ A_FireShotgun2
     int		damage;
 		
 	
-    S_StartSound (player->mo, sfx_dshtgn);
     P_SetMobjState (player->mo, S_PLAY_ATK2);
 
     player->ammo[weaponinfo[player->readyweapon].ammo]-=2;
@@ -734,8 +718,6 @@ A_FireCGun
 ( player_t*	player,
   pspdef_t*	psp ) 
 {
-    S_StartSound (player->mo, sfx_pistol);
-
     if (!player->ammo[weaponinfo[player->readyweapon].ammo])
 	return;
 		
@@ -819,7 +801,6 @@ A_BFGsound
 ( player_t*	player,
   pspdef_t*	psp )
 {
-    S_StartSound (player->mo, sfx_bfg);
 }
 
 
