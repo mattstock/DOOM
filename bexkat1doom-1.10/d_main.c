@@ -568,7 +568,12 @@ void D_DoomMain (void)
 	
     setbuf (stdout, NULL);
     modifiedgame = false;
-	
+
+    nomonsters = 0;
+    respawnparm = 0;
+    fastparm = 0;
+    devparm = 0;
+    
     sprintf (title,
 	     "                         "
 	     "The Ultimate DOOM Startup v%i.%i"
@@ -620,5 +625,12 @@ void D_DoomMain (void)
     printf ("ST_Init: Init status bar.\n");
     ST_Init ();
 
+    if (gameaction != ga_loadgame) {
+      if (autostart || netgame)
+	G_InitNew(startskill, startepisode, startmap);
+      else
+	D_StartTitle();
+    }
+    
     D_DoomLoop ();  // never returns
 }
