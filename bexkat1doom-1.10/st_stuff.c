@@ -57,7 +57,6 @@ rcsid[] = "$Id: st_stuff.c,v 1.6 1997/02/03 22:45:13 b1 Exp $";
 
 // Data.
 #include "dstrings.h"
-#include "sounds.h"
 
 //
 // STATUS BAR DATA
@@ -594,12 +593,9 @@ ST_Responder (event_t* ev)
       {
 	
 	char	buf[3];
-	int		musnum;
 	
 	plyr->message = STSTR_MUS;
 	cht_GetParam(&cheat_mus, buf);
-	
-	musnum = mus_e1m1 + (buf[0]-'1')*9 + (buf[1]-'1');
 	
 	plyr->message = STSTR_NOMUS;
       }

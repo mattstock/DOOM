@@ -32,9 +32,6 @@ rcsid[] = "$Id: p_switch.c,v 1.3 1997/01/28 22:08:29 b1 Exp $";
 
 #include "g_game.h"
 
-// Data.
-#include "sounds.h"
-
 // State.
 #include "doomstat.h"
 #include "r_state.h"
@@ -204,7 +201,6 @@ P_ChangeSwitchTexture
     int     texMid;
     int     texBot;
     int     i;
-    int     sound;
 	
     if (!useAgain)
 	line->special = 0;
@@ -212,12 +208,6 @@ P_ChangeSwitchTexture
     texTop = sides[line->sidenum[0]].toptexture;
     texMid = sides[line->sidenum[0]].midtexture;
     texBot = sides[line->sidenum[0]].bottomtexture;
-	
-    sound = sfx_swtchn;
-
-    // EXIT SWITCH?
-    if (line->special == 11)                
-	sound = sfx_swtchx;
 	
     for (i = 0;i < numswitches*2;i++)
     {

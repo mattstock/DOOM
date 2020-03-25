@@ -35,8 +35,6 @@ rcsid[] = "$Id: p_pspr.c,v 1.5 1997/02/03 22:45:12 b1 Exp $";
 // State.
 #include "doomstat.h"
 
-// Data.
-#include "sounds.h"
 
 #include "p_pspr.h"
 

@@ -55,9 +55,6 @@ rcsid[] = "$Id: m_menu.c,v 1.7 1997/02/03 22:45:10 b1 Exp $";
 
 #include "doomstat.h"
 
-// Data.
-#include "sounds.h"
-
 #include "m_menu.h"
 
 
@@ -998,38 +995,6 @@ void M_FinishReadThis(int choice)
     choice = 0;
     M_SetupNextMenu(&MainDef);
 }
-
-
-
-
-//
-// M_QuitDOOM
-//
-int     quitsounds[8] =
-{
-    sfx_pldeth,
-    sfx_dmpain,
-    sfx_popain,
-    sfx_slop,
-    sfx_telept,
-    sfx_posit1,
-    sfx_posit3,
-    sfx_sgtatk
-};
-
-int     quitsounds2[8] =
-{
-    sfx_vilact,
-    sfx_getpow,
-    sfx_boscub,
-    sfx_slop,
-    sfx_skeswg,
-    sfx_kntdth,
-    sfx_bspact,
-    sfx_sgtatk
-};
-
-
 
 void M_QuitResponse(int ch)
 {

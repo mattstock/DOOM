@@ -40,9 +40,6 @@ rcsid[] = "$Id: p_enemy.c,v 1.5 1997/02/03 22:45:11 b1 Exp $";
 #include "doomstat.h"
 #include "r_state.h"
 
-// Data.
-#include "sounds.h"
-
 
 
 
@@ -623,30 +620,6 @@ void A_Look (mobj_t* actor)
 		
     // go into chase state
   seeyou:
-    if (actor->info->seesound)
-    {
-	int		sound;
-		
-	switch (actor->info->seesound)
-	{
-	  case sfx_posit1:
-	  case sfx_posit2:
-	  case sfx_posit3:
-	    sound = sfx_posit1+P_Random()%3;
-	    break;
-
-	  case sfx_bgsit1:
-	  case sfx_bgsit2:
-	    sound = sfx_bgsit1+P_Random()%2;
-	    break;
-
-	  default:
-	    sound = actor->info->seesound;
-	    break;
-	}
-
-    }
-
     P_SetMobjState (actor, actor->info->seestate);
 }
 
@@ -1498,29 +1471,6 @@ void A_PainDie (mobj_t* actor)
 
 void A_Scream (mobj_t* actor)
 {
-    int		sound;
-	
-    switch (actor->info->deathsound)
-    {
-      case 0:
-	return;
-		
-      case sfx_podth1:
-      case sfx_podth2:
-      case sfx_podth3:
-	sound = sfx_podth1 + P_Random ()%3;
-	break;
-		
-      case sfx_bgdth1:
-      case sfx_bgdth2:
-	sound = sfx_bgdth1 + P_Random ()%2;
-	break;
-	
-      default:
-	sound = actor->info->deathsound;
-	break;
-    }
-
 }
 
 
@@ -1876,7 +1826,6 @@ void A_SpawnSound (mobj_t* mo)
 void A_SpawnFly (mobj_t* mo)
 {
     mobj_t*	newmobj;
-    mobj_t*	fog;
     mobj_t*	targ;
     int		r;
     mobjtype_t	type;
@@ -1885,9 +1834,6 @@ void A_SpawnFly (mobj_t* mo)
 	return;	// still flying
 	
     targ = mo->target;
-
-    // First spawn teleport fog.
-    fog = P_SpawnMobj (targ->x, targ->y, targ->z, MT_SPAWNFIRE);
 
     // Randomly select monster to spawn.
     r = P_Random ();

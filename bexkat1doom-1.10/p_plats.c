@@ -36,9 +36,6 @@ rcsid[] = "$Id: p_plats.c,v 1.5 1997/02/03 22:45:12 b1 Exp $";
 #include "doomstat.h"
 #include "r_state.h"
 
-// Data.
-#include "sounds.h"
-
 
 plat_t*		activeplats[MAXPLATS];
 

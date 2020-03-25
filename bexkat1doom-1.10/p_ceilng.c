@@ -32,9 +32,6 @@ rcsid[] = "$Id: p_ceilng.c,v 1.4 1997/02/03 16:47:53 b1 Exp $";
 #include "doomstat.h"
 #include "r_state.h"
 
-// Data.
-#include "sounds.h"
-
 //
 // CEILINGS
 //

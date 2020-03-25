@@ -35,8 +35,6 @@
 #include "doomstat.h"
 
 #include "dstrings.h"
-#include "sounds.h"
-
 
 #include "z_zone.h"
 #include "w_wad.h"

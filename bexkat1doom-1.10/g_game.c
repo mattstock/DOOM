@@ -57,7 +57,6 @@ rcsid[] = "$Id: g_game.c,v 1.8 1997/02/03 22:45:09 b1 Exp $";
 
 // Data.
 #include "dstrings.h"
-#include "sounds.h"
 
 // SKY handling - still the wrong place.
 #include "r_data.h"
@@ -834,9 +833,6 @@ G_CheckSpot
 { 
     fixed_t		x;
     fixed_t		y; 
-    subsector_t*	ss; 
-    unsigned		an; 
-    mobj_t*		mo; 
     int			i;
 	
     if (!players[playernum].mo)
@@ -861,14 +857,6 @@ G_CheckSpot
     bodyque[bodyqueslot%BODYQUESIZE] = players[playernum].mo; 
     bodyqueslot++; 
 	
-    // spawn a teleport fog 
-    ss = R_PointInSubsector (x,y); 
-    an = ( ANG45 * (mthing->angle/45) ) >> ANGLETOFINESHIFT; 
- 
-    mo = P_SpawnMobj (x+20*finecosine[an], y+20*finesine[an] 
-		      , ss->sector->floorheight 
-		      , MT_TFOG); 
-	 
     return true; 
 } 
 
@@ -1508,7 +1496,6 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 // 
 void G_RecordDemo (char* name) 
 { 
-    int             i; 
     int				maxsize;
 	
     usergame = false; 
@@ -1559,19 +1546,10 @@ void G_DoPlayDemo (void)
 { 
     skill_t skill; 
     int             i, episode, map; 
-    int version;
     
     gameaction = ga_nothing; 
     demobuffer = demo_p = W_CacheLumpName (defdemoname, PU_STATIC); 
-    version = *demo_p++;
-    /*    if ( version != VERSION)
-    {
-      fprintf( stderr, "Demo is from %d version and we're %d!\n",
-	       version, VERSION);
-      gameaction = ga_nothing;
-      return;
-      } */
-    
+    demo_p++;
     skill = *demo_p++; 
     episode = *demo_p++; 
     map = *demo_p++; 

@@ -36,15 +36,9 @@ rcsid[] = "$Id: f_finale.c,v 1.5 1997/02/03 21:26:34 b1 Exp $";
 
 // Data.
 #include "dstrings.h"
-#include "sounds.h"
 
 #include "doomstat.h"
 #include "r_state.h"
-
-// ?
-//#include "doomstat.h"
-//#include "r_local.h"
-//#include "f_finale.h"
 
 // Stage of animation:
 //  0 = text, 1 = art screen, 2 = character cast
