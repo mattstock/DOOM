@@ -84,7 +84,7 @@ boolean         fastparm;	// checkparm of -fast
 
 boolean         drone;
 
-boolean		singletics = true; // debug flag to cancel adaptiveness
+boolean		singletics = false; // debug flag to cancel adaptiveness
 
 extern  boolean	inhelpscreens;
 
@@ -318,6 +318,8 @@ void D_Display (void)
 //
 extern  boolean         demorecording;
 
+extern void DebugPrint(char *str);
+
 void D_DoomLoop (void)
 {
     if (demorecording)
@@ -328,23 +330,23 @@ void D_DoomLoop (void)
     while (1)
     {
       // frame syncronous IO operations
-      printf("I_StartFrame()\n");
+      DebugPrint("I_StartFrame()\n");
       I_StartFrame ();                
 
       // process one or more tics
       if (singletics)
 	{
-	  printf("I_StartTic()\n");
+	  DebugPrint("I_StartTic()\n");
 	  I_StartTic ();
-	  printf("D_ProcessEvents()\n");
+	  DebugPrint("D_ProcessEvents()\n");
 	  D_ProcessEvents ();
-	  printf("G_BuildTiccmd()\n");
+	  DebugPrint("G_BuildTiccmd()\n");
 	  G_BuildTiccmd (&netcmds[consoleplayer][maketic%BACKUPTICS]);
 	  if (advancedemo)
 	    D_DoAdvanceDemo ();
-	  printf("M_Ticker()\n");
+	  DebugPrint("M_Ticker()\n");
 	  M_Ticker ();
-	  printf("G_Ticker()\n");
+	  DebugPrint("G_Ticker()\n");
 	  G_Ticker ();
 	  gametic++;
 	  maketic++;
@@ -355,7 +357,7 @@ void D_DoomLoop (void)
 	}
 		
       // Update display, next frame, with current state.
-      printf("D_Display()\n");
+      DebugPrint("D_Display()\n");
       D_Display ();
     }
 }

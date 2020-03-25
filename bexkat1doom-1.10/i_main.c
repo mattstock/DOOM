@@ -42,6 +42,13 @@ static void timer3(void) {
 
 #include "d_main.h"
 
+void DebugPrint(char *str) {
+  static unsigned int stamp;
+
+  printf("[%8u] %s", timers[12] - stamp, str);
+  stamp = timers[12];
+}
+
 int
 main
 ( int		argc,
