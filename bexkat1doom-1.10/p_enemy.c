@@ -1515,71 +1515,58 @@ void A_BossDeath (mobj_t* mo)
     line_t	junk;
     int		i;
 		
-    if ( gamemode == commercial)
-    {
-	if (gamemap != 7)
-	    return;
-		
-	if ((mo->type != MT_FATSO)
-	    && (mo->type != MT_BABY))
-	    return;
-    }
-    else
-    {
-	switch(gameepisode)
-	{
-	  case 1:
-	    if (gamemap != 8)
-		return;
-
-	    if (mo->type != MT_BRUISER)
-		return;
-	    break;
-	    
-	  case 2:
-	    if (gamemap != 8)
-		return;
-
+    switch(gameepisode)
+      {
+      case 1:
+	if (gamemap != 8)
+	  return;
+	
+	if (mo->type != MT_BRUISER)
+	  return;
+	break;
+	
+      case 2:
+	if (gamemap != 8)
+	  return;
+	
+	if (mo->type != MT_CYBORG)
+	  return;
+	break;
+	
+      case 3:
+	if (gamemap != 8)
+	  return;
+	
+	if (mo->type != MT_SPIDER)
+	  return;
+	
+	break;
+	
+      case 4:
+	switch(gamemap)
+	  {
+	  case 6:
 	    if (mo->type != MT_CYBORG)
-		return;
+	      return;
 	    break;
 	    
-	  case 3:
-	    if (gamemap != 8)
-		return;
-	    
+	  case 8: 
 	    if (mo->type != MT_SPIDER)
-		return;
-	    
-	    break;
-	    
-	  case 4:
-	    switch(gamemap)
-	    {
-	      case 6:
-		if (mo->type != MT_CYBORG)
-		    return;
-		break;
-		
-	      case 8: 
-		if (mo->type != MT_SPIDER)
-		    return;
-		break;
-		
-	      default:
-		return;
-		break;
-	    }
+	      return;
 	    break;
 	    
 	  default:
-	    if (gamemap != 8)
-		return;
+	    return;
 	    break;
-	}
-		
-    }
-
+	  }
+	break;
+	
+      default:
+	if (gamemap != 8)
+	  return;
+	break;
+      }
+    
     
     // make sure there is a player alive for victory
     for (i=0 ; i<MAXPLAYERS ; i++)
@@ -1607,52 +1594,30 @@ void A_BossDeath (mobj_t* mo)
     }
 	
     // victory!
-    if ( gamemode == commercial)
-    {
-	if (gamemap == 7)
-	{
-	    if (mo->type == MT_FATSO)
-	    {
-		junk.tag = 666;
-		EV_DoFloor(&junk,lowerFloorToLowest);
-		return;
-	    }
+    switch(gameepisode)
+      {
+      case 1:
+	junk.tag = 666;
+	EV_DoFloor (&junk, lowerFloorToLowest);
+	return;
+	break;
+	
+      case 4:
+	switch(gamemap)
+	  {
+	  case 6:
+	    junk.tag = 666;
+	    EV_DoDoor (&junk, blazeOpen);
+	    return;
+	    break;
 	    
-	    if (mo->type == MT_BABY)
-	    {
-		junk.tag = 667;
-		EV_DoFloor(&junk,raiseToTexture);
-		return;
-	    }
-	}
-    }
-    else
-    {
-	switch(gameepisode)
-	{
-	  case 1:
+	  case 8:
 	    junk.tag = 666;
 	    EV_DoFloor (&junk, lowerFloorToLowest);
 	    return;
 	    break;
-	    
-	  case 4:
-	    switch(gamemap)
-	    {
-	      case 6:
-		junk.tag = 666;
-		EV_DoDoor (&junk, blazeOpen);
-		return;
-		break;
-		
-	      case 8:
-		junk.tag = 666;
-		EV_DoFloor (&junk, lowerFloorToLowest);
-		return;
-		break;
-	    }
-	}
-    }
+	  }
+      }
 	
     G_ExitLevel ();
 }

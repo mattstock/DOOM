@@ -495,7 +495,6 @@ void IdentifyVersion (void)
 {
   static char	doomwad[] = "/doom.wad";
   // Registered.
-  gamemode = retail;
   D_AddFile (doomwad);
 }
 

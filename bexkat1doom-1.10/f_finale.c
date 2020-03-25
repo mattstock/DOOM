@@ -96,82 +96,28 @@ void F_StartFinale (void)
     // Okay - IWAD dependend stuff.
     // This has been changed severly, and
     //  some stuff might have changed in the process.
-    switch ( gamemode )
-    {
-
-      // DOOM 1 - E1, E3 or E4, but each nine missions
-      case shareware:
-      case registered:
-      case retail:
+    switch (gameepisode)
       {
-	switch (gameepisode)
-	{
-	  case 1:
-	    finaleflat = "FLOOR4_8";
-	    finaletext = e1text;
-	    break;
-	  case 2:
-	    finaleflat = "SFLR6_1";
-	    finaletext = e2text;
-	    break;
-	  case 3:
-	    finaleflat = "MFLR8_4";
-	    finaletext = e3text;
-	    break;
-	  case 4:
-	    finaleflat = "MFLR8_3";
-	    finaletext = e4text;
-	    break;
-	  default:
-	    // Ouch.
-	    break;
-	}
+      case 1:
+	finaleflat = "FLOOR4_8";
+	finaletext = e1text;
+	break;
+      case 2:
+	finaleflat = "SFLR6_1";
+	finaletext = e2text;
+	break;
+      case 3:
+	finaleflat = "MFLR8_4";
+	finaletext = e3text;
+	break;
+      case 4:
+	finaleflat = "MFLR8_3";
+	finaletext = e4text;
+	break;
+      default:
+	// Ouch.
 	break;
       }
-      
-      // DOOM II and missions packs with E1, M34
-      case commercial:
-      {
-	  switch (gamemap)
-	  {
-	    case 6:
-	      finaleflat = "SLIME16";
-	      finaletext = c1text;
-	      break;
-	    case 11:
-	      finaleflat = "RROCK14";
-	      finaletext = c2text;
-	      break;
-	    case 20:
-	      finaleflat = "RROCK07";
-	      finaletext = c3text;
-	      break;
-	    case 30:
-	      finaleflat = "RROCK17";
-	      finaletext = c4text;
-	      break;
-	    case 15:
-	      finaleflat = "RROCK13";
-	      finaletext = c5text;
-	      break;
-	    case 31:
-	      finaleflat = "RROCK19";
-	      finaletext = c6text;
-	      break;
-	    default:
-	      // Ouch.
-	      break;
-	  }
-	  break;
-      }	
-
-   
-      // Indeterminate.
-      default:
-	finaleflat = "F_SKY1"; // Not used anywhere else.
-	finaletext = c1text;  // FIXME - other text, music?
-	break;
-    }
     
     finalestage = 0;
     finalecount = 0;
@@ -196,24 +142,6 @@ void F_Ticker (void)
 {
     int		i;
     
-    // check for skipping
-    if ( (gamemode == commercial)
-      && ( finalecount > 50) )
-    {
-      // go on to the next level
-      for (i=0 ; i<MAXPLAYERS ; i++)
-	if (players[i].cmd.buttons)
-	  break;
-				
-      if (i < MAXPLAYERS)
-      {	
-	if (gamemap == 30)
-	  F_StartCast ();
-	else
-	  gameaction = ga_worlddone;
-      }
-    }
-    
     // advance animation
     finalecount++;
 	
@@ -223,9 +151,6 @@ void F_Ticker (void)
 	return;
     }
 	
-    if ( gamemode == commercial)
-	return;
-		
     if (!finalestage && finalecount>strlen (finaletext)*TEXTSPEED + TEXTWAIT)
     {
 	finalecount = 0;
@@ -656,12 +581,8 @@ void F_Drawer (void)
 	switch (gameepisode)
 	{
 	  case 1:
-	    if ( gamemode == retail )
-	      V_DrawPatch (0,0,0,
+	    V_DrawPatch (0,0,0,
 			 W_CacheLumpName("CREDIT",PU_CACHE));
-	    else
-	      V_DrawPatch (0,0,0,
-			 W_CacheLumpName("HELP2",PU_CACHE));
 	    break;
 	  case 2:
 	    V_DrawPatch(0,0,0,

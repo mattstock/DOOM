@@ -399,14 +399,7 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_MEGA:
-	if (gamemode != commercial)
-	    return;
-	player->health = 200;
-	player->mo->health = player->health;
-	P_GiveArmor (player,2);
-	player->message = GOTMSPHERE;
-	break;
-	
+	return;
 	// cards
 	// leave cards for everyone
       case SPR_BKEY:

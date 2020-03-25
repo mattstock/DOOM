@@ -660,16 +660,8 @@ ST_Responder (event_t* ev)
       
       cht_GetParam(&cheat_clev, buf);
       
-      if (gamemode == commercial)
-      {
-	epsd = 0;
-	map = (buf[0] - '0')*10 + buf[1] - '0';
-      }
-      else
-      {
-	epsd = buf[0] - '0';
-	map = buf[1] - '0';
-      }
+      epsd = buf[0] - '0';
+      map = buf[1] - '0';
 
       // Catch invalid maps.
       if (epsd < 1)
@@ -679,20 +671,7 @@ ST_Responder (event_t* ev)
 	return false;
       
       // Ohmygod - this is not going to work.
-      if ((gamemode == retail)
-	  && ((epsd > 4) || (map > 9)))
-	return false;
-
-      if ((gamemode == registered)
-	  && ((epsd > 3) || (map > 9)))
-	return false;
-
-      if ((gamemode == shareware)
-	  && ((epsd > 1) || (map > 9)))
-	return false;
-
-      if ((gamemode == commercial)
-	&& (( epsd > 1) || (map > 34)))
+      if ((epsd > 4) || (map > 9))
 	return false;
 
       // So be it.
