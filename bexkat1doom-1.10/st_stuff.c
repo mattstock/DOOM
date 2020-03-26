@@ -49,8 +49,6 @@ rcsid[] = "$Id: st_stuff.c,v 1.6 1997/02/03 22:45:13 b1 Exp $";
 #include "am_map.h"
 #include "m_cheat.h"
 
-#include "s_sound.h"
-
 // Needs access to LFB.
 #include "v_video.h"
 
@@ -59,7 +57,6 @@ rcsid[] = "$Id: st_stuff.c,v 1.6 1997/02/03 22:45:13 b1 Exp $";
 
 // Data.
 #include "dstrings.h"
-#include "sounds.h"
 
 //
 // STATUS BAR DATA
@@ -596,29 +593,11 @@ ST_Responder (event_t* ev)
       {
 	
 	char	buf[3];
-	int		musnum;
 	
 	plyr->message = STSTR_MUS;
 	cht_GetParam(&cheat_mus, buf);
 	
-	if (gamemode == commercial)
-	{
-	  musnum = mus_runnin + (buf[0]-'0')*10 + buf[1]-'0' - 1;
-	  
-	  if (((buf[0]-'0')*10 + buf[1]-'0') > 35)
-	    plyr->message = STSTR_NOMUS;
-	  else
-	    S_ChangeMusic(musnum, 1);
-	}
-	else
-	{
-	  musnum = mus_e1m1 + (buf[0]-'1')*9 + (buf[1]-'1');
-	  
-	  if (((buf[0]-'1')*9 + buf[1]-'1') > 31)
-	    plyr->message = STSTR_NOMUS;
-	  else
-	    S_ChangeMusic(musnum, 1);
-	}
+	plyr->message = STSTR_NOMUS;
       }
       // Simplified, accepting both "noclip" and "idspispopd".
       // no clipping mode cheat
@@ -681,16 +660,8 @@ ST_Responder (event_t* ev)
       
       cht_GetParam(&cheat_clev, buf);
       
-      if (gamemode == commercial)
-      {
-	epsd = 0;
-	map = (buf[0] - '0')*10 + buf[1] - '0';
-      }
-      else
-      {
-	epsd = buf[0] - '0';
-	map = buf[1] - '0';
-      }
+      epsd = buf[0] - '0';
+      map = buf[1] - '0';
 
       // Catch invalid maps.
       if (epsd < 1)
@@ -700,20 +671,7 @@ ST_Responder (event_t* ev)
 	return false;
       
       // Ohmygod - this is not going to work.
-      if ((gamemode == retail)
-	  && ((epsd > 4) || (map > 9)))
-	return false;
-
-      if ((gamemode == registered)
-	  && ((epsd > 3) || (map > 9)))
-	return false;
-
-      if ((gamemode == shareware)
-	  && ((epsd > 1) || (map > 9)))
-	return false;
-
-      if ((gamemode == commercial)
-	&& (( epsd > 1) || (map > 34)))
+      if ((epsd > 4) || (map > 9))
 	return false;
 
       // So be it.

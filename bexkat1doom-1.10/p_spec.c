@@ -43,13 +43,8 @@ rcsid[] = "$Id: p_spec.c,v 1.6 1997/02/03 22:45:12 b1 Exp $";
 
 #include "g_game.h"
 
-#include "s_sound.h"
-
 // State.
 #include "r_state.h"
-
-// Data.
-#include "sounds.h"
 
 
 //
@@ -1147,7 +1142,6 @@ void P_UpdateSpecials (void)
 			buttonlist[i].btexture;
 		    break;
 		}
-		S_StartSound((mobj_t *)&buttonlist[i].soundorg,sfx_swtchn);
 		memset(&buttonlist[i],0,sizeof(button_t));
 	    }
 	}

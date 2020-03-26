@@ -24,33 +24,20 @@
 //
 //-----------------------------------------------------------------------------
 
-
-static const char rcsid[] = "$Id: d_main.c,v 1.8 1997/02/03 22:45:09 b1 Exp $";
-
-#define	BGCOLOR		7
-#define	FGCOLOR		8
-
-
-#ifdef NORMALUNIX
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#endif
-
 
 #include "doomdef.h"
 #include "doomstat.h"
 
 #include "dstrings.h"
-#include "sounds.h"
-
 
 #include "z_zone.h"
 #include "w_wad.h"
-#include "s_sound.h"
 #include "v_video.h"
 
 #include "f_finale.h"
@@ -60,7 +47,6 @@ static const char rcsid[] = "$Id: d_main.c,v 1.8 1997/02/03 22:45:09 b1 Exp $";
 #include "m_menu.h"
 
 #include "i_system.h"
-#include "i_sound.h"
 #include "i_video.h"
 
 #include "g_game.h"
@@ -98,13 +84,7 @@ boolean         fastparm;	// checkparm of -fast
 
 boolean         drone;
 
-boolean		singletics = true; // debug flag to cancel adaptiveness
-
-
-
-//extern int soundVolume;
-//extern  int	sfxVolume;
-//extern  int	musicVolume;
+boolean		singletics = false; // debug flag to cancel adaptiveness
 
 extern  boolean	inhelpscreens;
 
@@ -113,23 +93,16 @@ int             startepisode;
 int		startmap;
 boolean		autostart;
 
-FILE*		debugfile;
-
 boolean		advancedemo;
-
-
-
 
 char		wadfile[1024];		// primary wad file
 char		mapdir[1024];           // directory of development maps
 char		basedefault[1024];      // default file
 
-
 void D_CheckNetGame (void);
 void D_ProcessEvents (void);
 void G_BuildTiccmd (ticcmd_t* cmd);
 void D_DoAdvanceDemo (void);
-
 
 //
 // EVENT HANDLING
@@ -160,11 +133,6 @@ void D_PostEvent (event_t* ev)
 void D_ProcessEvents (void)
 {
     event_t*	ev;
-	
-    // IF STORE DEMO, DO NOT ACCEPT INPUT
-    if ( ( gamemode == commercial )
-	 && (W_CheckNumForName("map01")<0) )
-      return;
 	
     for ( ; eventtail != eventhead ; eventtail = (++eventtail)&(MAXEVENTS-1) )
     {
@@ -350,6 +318,8 @@ void D_Display (void)
 //
 extern  boolean         demorecording;
 
+extern void DebugPrint(char *str);
+
 void D_DoomLoop (void)
 {
     if (demorecording)
@@ -360,17 +330,23 @@ void D_DoomLoop (void)
     while (1)
     {
       // frame syncronous IO operations
+      DebugPrint("I_StartFrame()\n");
       I_StartFrame ();                
 
       // process one or more tics
       if (singletics)
 	{
+	  DebugPrint("I_StartTic()\n");
 	  I_StartTic ();
+	  DebugPrint("D_ProcessEvents()\n");
 	  D_ProcessEvents ();
+	  DebugPrint("G_BuildTiccmd()\n");
 	  G_BuildTiccmd (&netcmds[consoleplayer][maketic%BACKUPTICS]);
 	  if (advancedemo)
 	    D_DoAdvanceDemo ();
+	  DebugPrint("M_Ticker()\n");
 	  M_Ticker ();
+	  DebugPrint("G_Ticker()\n");
 	  G_Ticker ();
 	  gametic++;
 	  maketic++;
@@ -380,12 +356,9 @@ void D_DoomLoop (void)
 	  TryRunTics (); // will run at least one tic
 	}
 		
-      S_UpdateSounds (players[consoleplayer].mo);// move positional sounds
-
       // Update display, next frame, with current state.
+      DebugPrint("D_Display()\n");
       D_Display ();
-      
-      // Needs I_UpdateSounds() or I_SubmitSounds()
     }
 }
 
@@ -442,24 +415,14 @@ void D_AdvanceDemo (void)
     paused = false;
     gameaction = ga_nothing;
 
-    if ( gamemode == retail )
-      demosequence = (demosequence+1)%7;
-    else
-      demosequence = (demosequence+1)%6;
+    demosequence = (demosequence+1)%7;
     
     switch (demosequence)
     {
       case 0:
-	if ( gamemode == commercial )
-	    pagetic = 35 * 11;
-	else
-	    pagetic = 170;
+	pagetic = 170;
 	gamestate = GS_DEMOSCREEN;
 	pagename = "TITLEPIC";
-	if ( gamemode == commercial )
-	  S_StartMusic(mus_dm2ttl);
-	else
-	  S_StartMusic (mus_intro);
 	break;
       case 1:
 	G_DeferedPlayDemo ("demo1");
@@ -474,21 +437,8 @@ void D_AdvanceDemo (void)
 	break;
       case 4:
 	gamestate = GS_DEMOSCREEN;
-	if ( gamemode == commercial)
-	{
-	    pagetic = 35 * 11;
-	    pagename = "TITLEPIC";
-	    S_StartMusic(mus_dm2ttl);
-	}
-	else
-	{
-	    pagetic = 200;
-
-	    if ( gamemode == retail )
-	      pagename = "CREDIT";
-	    else
-	      pagename = "HELP2";
-	}
+	pagetic = 200;
+	pagename = "CREDIT";
 	break;
       case 5:
 	G_DeferedPlayDemo ("demo3");
@@ -547,7 +497,6 @@ void IdentifyVersion (void)
 {
   static char	doomwad[] = "/doom.wad";
   // Registered.
-  gamemode = retail;
   D_AddFile (doomwad);
 }
 
@@ -560,7 +509,12 @@ void D_DoomMain (void)
 	
     setbuf (stdout, NULL);
     modifiedgame = false;
-	
+
+    nomonsters = 0;
+    respawnparm = 0;
+    fastparm = 0;
+    devparm = 0;
+    
     sprintf (title,
 	     "                         "
 	     "The Ultimate DOOM Startup v%i.%i"
@@ -603,14 +557,18 @@ void D_DoomMain (void)
     printf ("D_CheckNetGame: Checking network game status.\n");
     D_CheckNetGame ();
 
-    printf ("S_Init: Setting up sound.\n");
-    S_Init (snd_SfxVolume /* *8 */, snd_MusicVolume /* *8*/ );
-
     printf ("HU_Init: Setting up heads up display.\n");
     HU_Init ();
 
     printf ("ST_Init: Init status bar.\n");
     ST_Init ();
 
+    if (gameaction != ga_loadgame) {
+      if (autostart || netgame)
+	G_InitNew(startskill, startepisode, startmap);
+      else
+	D_StartTitle();
+    }
+    
     D_DoomLoop ();  // never returns
 }

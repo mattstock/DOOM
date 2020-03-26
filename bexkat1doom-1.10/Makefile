@@ -23,6 +23,8 @@ OBJS=				\
 		$(O)/i_video.o \
 		$(O)/i_net.o \
 		$(O)/i_system.o		\
+		$(O)/i_video.o		\
+		$(O)/i_net.o			\
 		$(O)/tables.o			\
 		$(O)/f_finale.o		\
 		$(O)/f_wipe.o 		\
@@ -72,15 +74,8 @@ OBJS=				\
 		$(O)/st_stuff.o		\
 		$(O)/hu_stuff.o		\
 		$(O)/hu_lib.o			\
-		$(O)/s_sound.o		\
 		$(O)/z_zone.o			\
-		$(O)/info.o				\
-		$(O)/sounds.o \
-		$(O)/ff.o \
-		$(O)/mmc.o \
-		$(O)/gettime.o \
-		$(O)/vectors.o \
-		$(O)/setint.o
+		$(O)/info.o	
 
 all:	 $(O)/bexkat1doom
 

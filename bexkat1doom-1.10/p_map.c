@@ -34,13 +34,9 @@ rcsid[] = "$Id: p_map.c,v 1.5 1997/02/03 22:45:11 b1 Exp $";
 #include "doomdef.h"
 #include "p_local.h"
 
-#include "s_sound.h"
-
 // State.
 #include "doomstat.h"
 #include "r_state.h"
-// Data.
-#include "sounds.h"
 
 
 fixed_t		tmbbox[4];
@@ -1101,8 +1097,6 @@ boolean	PTR_UseTraverse (intercept_t* in)
 	P_LineOpening (in->d.line);
 	if (openrange <= 0)
 	{
-	    S_StartSound (usething, sfx_noway);
-	    
 	    // can't use through a wall
 	    return false;	
 	}

@@ -160,6 +160,8 @@ void I_GetEvent(void)
   unsigned int rawkey;
   
   rawkey = keyboard_getevent();
+  if (rawkey == 0)
+    return;
   event.type = (rawkey & 0x200 ? ev_keyup : ev_keydown);
   event.data1 = scancode(rawkey & 0x100, rawkey & 0xff);
   D_PostEvent(&event);
@@ -228,16 +230,6 @@ void I_SetPalette (byte* palette)
 
 void I_InitGraphics(void)
 {
-
-    int			n;
-    int			pnum;
-    int			x=0;
-    int			y=0;
-    
-    // warning: char format, different type arg
-    char		xsign=' ';
-    char		ysign=' ';
-    
     static int		firsttime=1;
 
     if (!firsttime)
@@ -248,25 +240,6 @@ void I_InitGraphics(void)
     
     X_width = SCREENWIDTH * multiply;
     X_height = SCREENHEIGHT * multiply;
-
-    // check for command-line geometry
-    if ( (pnum=M_CheckParm("-geom")) ) // suggest parentheses around assignment
-    {
-	// warning: char format, different type arg 3,5
-	n = sscanf(myargv[pnum+1], "%c%d%c%d", &xsign, &x, &ysign, &y);
-	
-	if (n==2)
-	    x = y = 0;
-	else if (n==6)
-	{
-	    if (xsign == '-')
-		x = -x;
-	    if (ysign == '-')
-		y = -y;
-	}
-	else
-	    I_Error("bad -geom parameter");
-    }
 
     screens[0] = (unsigned char *)malloc(SCREENWIDTH*SCREENHEIGHT);
 }

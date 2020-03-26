@@ -32,11 +32,6 @@ rcsid[] = "$Id: p_switch.c,v 1.3 1997/01/28 22:08:29 b1 Exp $";
 
 #include "g_game.h"
 
-#include "s_sound.h"
-
-// Data.
-#include "sounds.h"
-
 // State.
 #include "doomstat.h"
 #include "r_state.h"
@@ -112,12 +107,6 @@ void P_InitSwitchList(void)
 	
     episode = 1;
 
-    if (gamemode == registered)
-	episode = 2;
-    else
-	if ( gamemode == commercial )
-	    episode = 3;
-		
     for (index = 0,i = 0;i < MAXSWITCHES;i++)
     {
 	if (!alphSwitchList[i].episode)
@@ -129,18 +118,6 @@ void P_InitSwitchList(void)
 		
 	if (alphSwitchList[i].episode <= episode)
 	{
-#if 0	// UNUSED - debug?
-	    int		value;
-			
-	    if (R_CheckTextureNumForName(alphSwitchList[i].name1) < 0)
-	    {
-		I_Error("Can't find switch texture '%s'!",
-			alphSwitchList[i].name1);
-		continue;
-	    }
-	    
-	    value = R_TextureNumForName(alphSwitchList[i].name1);
-#endif
 	    switchlist[index++] = R_TextureNumForName(alphSwitchList[i].name1);
 	    switchlist[index++] = R_TextureNumForName(alphSwitchList[i].name2);
 	}
@@ -206,7 +183,6 @@ P_ChangeSwitchTexture
     int     texMid;
     int     texBot;
     int     i;
-    int     sound;
 	
     if (!useAgain)
 	line->special = 0;
@@ -215,17 +191,10 @@ P_ChangeSwitchTexture
     texMid = sides[line->sidenum[0]].midtexture;
     texBot = sides[line->sidenum[0]].bottomtexture;
 	
-    sound = sfx_swtchn;
-
-    // EXIT SWITCH?
-    if (line->special == 11)                
-	sound = sfx_swtchx;
-	
     for (i = 0;i < numswitches*2;i++)
     {
 	if (switchlist[i] == texTop)
 	{
-	    S_StartSound(buttonlist->soundorg,sound);
 	    sides[line->sidenum[0]].toptexture = switchlist[i^1];
 
 	    if (useAgain)
@@ -237,7 +206,6 @@ P_ChangeSwitchTexture
 	{
 	    if (switchlist[i] == texMid)
 	    {
-		S_StartSound(buttonlist->soundorg,sound);
 		sides[line->sidenum[0]].midtexture = switchlist[i^1];
 
 		if (useAgain)
@@ -249,7 +217,6 @@ P_ChangeSwitchTexture
 	    {
 		if (switchlist[i] == texBot)
 		{
-		    S_StartSound(buttonlist->soundorg,sound);
 		    sides[line->sidenum[0]].bottomtexture = switchlist[i^1];
 
 		    if (useAgain)

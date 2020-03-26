@@ -163,25 +163,6 @@ HSendPacket
     doomcom->remotenode = node;
     doomcom->datalength = NetbufferSize ();
 	
-    if (debugfile)
-    {
-	int		i;
-	int		realretrans;
-	if (netbuffer->checksum & NCMD_RETRANSMIT)
-	    realretrans = ExpandTics (netbuffer->retransmitfrom);
-	else
-	    realretrans = -1;
-
-	fprintf (debugfile,"send (%i + %i, R %i) [%i] ",
-		 ExpandTics(netbuffer->starttic),
-		 netbuffer->numtics, realretrans, doomcom->datalength);
-	
-	for (i=0 ; i<doomcom->datalength ; i++)
-	    fprintf (debugfile,"%i ",((byte *)netbuffer)[i]);
-
-	fprintf (debugfile,"\n");
-    }
-
     I_NetCmd ();
 }
 
@@ -213,42 +194,14 @@ boolean HGetPacket (void)
 
     if (doomcom->datalength != NetbufferSize ())
     {
-	if (debugfile)
-	    fprintf (debugfile,"bad packet length %i\n",doomcom->datalength);
-	return false;
+      return false;
     }
 	
     if (NetbufferChecksum () != (netbuffer->checksum&NCMD_CHECKSUM) )
     {
-	if (debugfile)
-	    fprintf (debugfile,"bad packet checksum\n");
-	return false;
+      return false;
     }
 
-    if (debugfile)
-    {
-	int		realretrans;
-	int	i;
-			
-	if (netbuffer->checksum & NCMD_SETUP)
-	    fprintf (debugfile,"setup packet\n");
-	else
-	{
-	    if (netbuffer->checksum & NCMD_RETRANSMIT)
-		realretrans = ExpandTics (netbuffer->retransmitfrom);
-	    else
-		realretrans = -1;
-	    
-	    fprintf (debugfile,"get %i = (%i + %i, R %i)[%i] ",
-		     doomcom->remotenode,
-		     ExpandTics(netbuffer->starttic),
-		     netbuffer->numtics, realretrans, doomcom->datalength);
-
-	    for (i=0 ; i<doomcom->datalength ; i++)
-		fprintf (debugfile,"%i ",((byte *)netbuffer)[i]);
-	    fprintf (debugfile,"\n");
-	}
-    }
     return true;	
 }
 
@@ -305,8 +258,6 @@ void GetPackets (void)
 	     && (netbuffer->checksum & NCMD_RETRANSMIT) )
 	{
 	    resendto[netnode] = ExpandTics(netbuffer->retransmitfrom);
-	    if (debugfile)
-		fprintf (debugfile,"retransmit from %i\n", resendto[netnode]);
 	    resendcount[netnode] = RESENDCOUNT;
 	}
 	else
@@ -318,10 +269,6 @@ void GetPackets (void)
 			
 	if (realend < nettics[netnode])
 	{
-	    if (debugfile)
-		fprintf (debugfile,
-			 "out of order packet (%i + %i)\n" ,
-			 realstart,netbuffer->numtics);
 	    continue;
 	}
 	
@@ -329,10 +276,6 @@ void GetPackets (void)
 	if (realstart > nettics[netnode])
 	{
 	    // stop processing until the other system resends the missed tics
-	    if (debugfile)
-		fprintf (debugfile,
-			 "missed tics from %i (%i - %i)\n",
-			 netnode, realstart, nettics[netnode]);
 	    remoteresend[netnode] = true;
 	    continue;
 	}
@@ -601,9 +544,6 @@ void D_QuitNetGame (void)
 {
     int             i, j;
 	
-    if (debugfile)
-	fclose (debugfile);
-		
     if (!netgame || !usergame || consoleplayer == -1 || demoplayback)
 	return;
 	
@@ -675,11 +615,6 @@ void TryRunTics (void)
 	counts = 1;
 		
     frameon++;
-
-    if (debugfile)
-	fprintf (debugfile,
-		 "=======real: %i  avail: %i  game: %i\n",
-		 realtics, availabletics,counts);
 
     if (!demoplayback)
     {	

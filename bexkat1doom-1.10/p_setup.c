@@ -41,8 +41,6 @@ rcsid[] = "$Id: p_setup.c,v 1.5 1997/02/03 22:45:12 b1 Exp $";
 #include "doomdef.h"
 #include "p_local.h"
 
-#include "s_sound.h"
-
 #include "doomstat.h"
 
 
@@ -315,24 +313,21 @@ void P_LoadThings (int lump)
 	spawn = true;
 
 	// Do not spawn cool, new monsters if !commercial
-	if ( gamemode != commercial)
-	{
-	    switch(mt->type)
-	    {
-	      case 68:	// Arachnotron
-	      case 64:	// Archvile
-	      case 88:	// Boss Brain
-	      case 89:	// Boss Shooter
-	      case 69:	// Hell Knight
-	      case 67:	// Mancubus
-	      case 71:	// Pain Elemental
-	      case 65:	// Former Human Commando
-	      case 66:	// Revenant
-	      case 84:	// Wolf SS
-		spawn = false;
-		break;
-	    }
-	}
+	switch(mt->type)
+	  {
+	  case 68:	// Arachnotron
+	  case 64:	// Archvile
+	  case 88:	// Boss Brain
+	  case 89:	// Boss Shooter
+	  case 69:	// Hell Knight
+	  case 67:	// Mancubus
+	  case 71:	// Pain Elemental
+	  case 65:	// Former Human Commando
+	  case 66:	// Revenant
+	  case 84:	// Wolf SS
+	    spawn = false;
+	    break;
+	  }
 	if (spawn == false)
 	    break;
 
@@ -603,19 +598,7 @@ P_SetupLevel
     // will be set by player think.
     players[consoleplayer].viewz = 1; 
 
-    // Make sure all sounds are stopped before Z_FreeTags.
-    S_Start ();			
-
-    
-#if 0 // UNUSED
-    if (debugfile)
-    {
-	Z_FreeTags (PU_LEVEL, MAXINT);
-	Z_FileDumpHeap (debugfile);
-    }
-    else
-#endif
-	Z_FreeTags (PU_LEVEL, PU_PURGELEVEL-1);
+    Z_FreeTags (PU_LEVEL, PU_PURGELEVEL-1);
 
 
     // UNUSED W_Profile ();
@@ -625,21 +608,11 @@ P_SetupLevel
     W_Reload ();			
 	   
     // find map name
-    if ( gamemode == commercial)
-    {
-	if (map<10)
-	    sprintf (lumpname,"map0%i", map);
-	else
-	    sprintf (lumpname,"map%i", map);
-    }
-    else
-    {
-	lumpname[0] = 'E';
-	lumpname[1] = '0' + episode;
-	lumpname[2] = 'M';
-	lumpname[3] = '0' + map;
-	lumpname[4] = 0;
-    }
+    lumpname[0] = 'E';
+    lumpname[1] = '0' + episode;
+    lumpname[2] = 'M';
+    lumpname[3] = '0' + map;
+    lumpname[4] = 0;
 
     lumpnum = W_GetNumForName (lumpname);
 	

@@ -38,12 +38,8 @@ rcsid[] = "$Id: wi_stuff.c,v 1.7 1997/02/03 22:45:13 b1 Exp $";
 #include "g_game.h"
 
 #include "r_local.h"
-#include "s_sound.h"
 
 #include "doomstat.h"
-
-// Data.
-#include "sounds.h"
 
 // Needs access to LFB.
 #include "v_video.h"
@@ -330,9 +326,6 @@ static int		cnt_time;
 static int		cnt_par;
 static int		cnt_pause;
 
-// # of commercial levels
-static int		NUMCMAPS; 
-
 
 //
 //	GRAPHICS
@@ -505,9 +498,6 @@ void WI_initAnimatedBack(void)
     int		i;
     anim_t*	a;
 
-    if (gamemode == commercial)
-	return;
-
     if (wbs->epsd > 2)
 	return;
 
@@ -533,9 +523,6 @@ void WI_updateAnimatedBack(void)
 {
     int		i;
     anim_t*	a;
-
-    if (gamemode == commercial)
-	return;
 
     if (wbs->epsd > 2)
 	return;
@@ -584,9 +571,6 @@ void WI_drawAnimatedBack(void)
 {
     int			i;
     anim_t*		a;
-
-    if (commercial)
-	return;
 
     if (wbs->epsd > 2)
 	return;
@@ -779,34 +763,28 @@ void WI_drawShowNextLoc(void)
     // draw animated background
     WI_drawAnimatedBack(); 
 
-    if ( gamemode != commercial)
-    {
-  	if (wbs->epsd > 2)
-	{
-	    WI_drawEL();
-	    return;
-	}
-	
-	last = (wbs->last == 8) ? wbs->next - 1 : wbs->last;
-
-	// draw a splat on taken cities.
-	for (i=0 ; i<=last ; i++)
-	    WI_drawOnLnode(i, &splat);
-
-	// splat the secret level?
-	if (wbs->didsecret)
-	    WI_drawOnLnode(8, &splat);
-
-	// draw flashing ptr
-	if (snl_pointeron)
-	    WI_drawOnLnode(wbs->next, yah); 
-    }
-
+    if (wbs->epsd > 2)
+      {
+	WI_drawEL();
+	return;
+      }
+    
+    last = (wbs->last == 8) ? wbs->next - 1 : wbs->last;
+    
+    // draw a splat on taken cities.
+    for (i=0 ; i<=last ; i++)
+      WI_drawOnLnode(i, &splat);
+    
+    // splat the secret level?
+    if (wbs->didsecret)
+      WI_drawOnLnode(8, &splat);
+    
+    // draw flashing ptr
+    if (snl_pointeron)
+      WI_drawOnLnode(wbs->next, yah); 
+    
     // draws which level you are entering..
-    if ( (gamemode != commercial)
-	 || wbs->next != 30)
-	WI_drawEL();  
-
+    WI_drawEL();  
 }
 
 void WI_drawNoState(void)
@@ -902,16 +880,12 @@ void WI_updateDeathmatchStats(void)
 	}
 	
 
-	S_StartSound(0, sfx_barexp);
 	dm_state = 4;
     }
 
     
     if (dm_state == 2)
     {
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-	
 	stillticking = false;
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -949,7 +923,6 @@ void WI_updateDeathmatchStats(void)
 	}
 	if (!stillticking)
 	{
-	    S_StartSound(0, sfx_barexp);
 	    dm_state++;
 	}
 
@@ -958,12 +931,7 @@ void WI_updateDeathmatchStats(void)
     {
 	if (acceleratestage)
 	{
-	    S_StartSound(0, sfx_slop);
-
-	    if ( gamemode == commercial)
-		WI_initNoState();
-	    else
-		WI_initShowNextLoc();
+	  WI_initShowNextLoc();
 	}
     }
     else if (dm_state & 1)
@@ -1125,15 +1093,11 @@ void WI_updateNetgameStats(void)
 	    if (dofrags)
 		cnt_frags[i] = WI_fragSum(i);
 	}
-	S_StartSound(0, sfx_barexp);
 	ng_state = 10;
     }
 
     if (ng_state == 2)
     {
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	stillticking = false;
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -1151,15 +1115,11 @@ void WI_updateNetgameStats(void)
 	
 	if (!stillticking)
 	{
-	    S_StartSound(0, sfx_barexp);
 	    ng_state++;
 	}
     }
     else if (ng_state == 4)
     {
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	stillticking = false;
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -1175,15 +1135,11 @@ void WI_updateNetgameStats(void)
 	}
 	if (!stillticking)
 	{
-	    S_StartSound(0, sfx_barexp);
 	    ng_state++;
 	}
     }
     else if (ng_state == 6)
     {
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	stillticking = false;
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -1201,15 +1157,11 @@ void WI_updateNetgameStats(void)
 	
 	if (!stillticking)
 	{
-	    S_StartSound(0, sfx_barexp);
 	    ng_state += 1 + 2*!dofrags;
 	}
     }
     else if (ng_state == 8)
     {
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	stillticking = false;
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -1227,7 +1179,6 @@ void WI_updateNetgameStats(void)
 	
 	if (!stillticking)
 	{
-	    S_StartSound(0, sfx_pldeth);
 	    ng_state++;
 	}
     }
@@ -1235,11 +1186,7 @@ void WI_updateNetgameStats(void)
     {
 	if (acceleratestage)
 	{
-	    S_StartSound(0, sfx_sgcock);
-	    if ( gamemode == commercial )
-		WI_initNoState();
-	    else
-		WI_initShowNextLoc();
+	  WI_initShowNextLoc();
 	}
     }
     else if (ng_state & 1)
@@ -1336,7 +1283,6 @@ void WI_updateStats(void)
 	cnt_secret[0] = (plrs[me].ssecret * 100) / wbs->maxsecret;
 	cnt_time = plrs[me].stime / TICRATE;
 	cnt_par = wbs->partime / TICRATE;
-	S_StartSound(0, sfx_barexp);
 	sp_state = 10;
     }
 
@@ -1344,13 +1290,9 @@ void WI_updateStats(void)
     {
 	cnt_kills[0] += 2;
 
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	if (cnt_kills[0] >= (plrs[me].skills * 100) / wbs->maxkills)
 	{
 	    cnt_kills[0] = (plrs[me].skills * 100) / wbs->maxkills;
-	    S_StartSound(0, sfx_barexp);
 	    sp_state++;
 	}
     }
@@ -1358,13 +1300,9 @@ void WI_updateStats(void)
     {
 	cnt_items[0] += 2;
 
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	if (cnt_items[0] >= (plrs[me].sitems * 100) / wbs->maxitems)
 	{
 	    cnt_items[0] = (plrs[me].sitems * 100) / wbs->maxitems;
-	    S_StartSound(0, sfx_barexp);
 	    sp_state++;
 	}
     }
@@ -1372,22 +1310,15 @@ void WI_updateStats(void)
     {
 	cnt_secret[0] += 2;
 
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	if (cnt_secret[0] >= (plrs[me].ssecret * 100) / wbs->maxsecret)
 	{
 	    cnt_secret[0] = (plrs[me].ssecret * 100) / wbs->maxsecret;
-	    S_StartSound(0, sfx_barexp);
 	    sp_state++;
 	}
     }
 
     else if (sp_state == 8)
     {
-	if (!(bcnt&3))
-	    S_StartSound(0, sfx_pistol);
-
 	cnt_time += 3;
 
 	if (cnt_time >= plrs[me].stime / TICRATE)
@@ -1401,7 +1332,6 @@ void WI_updateStats(void)
 
 	    if (cnt_time >= plrs[me].stime / TICRATE)
 	    {
-		S_StartSound(0, sfx_barexp);
 		sp_state++;
 	    }
 	}
@@ -1410,12 +1340,7 @@ void WI_updateStats(void)
     {
 	if (acceleratestage)
 	{
-	    S_StartSound(0, sfx_sgcock);
-
-	    if (gamemode == commercial)
-		WI_initNoState();
-	    else
-		WI_initShowNextLoc();
+	  WI_initShowNextLoc();
 	}
     }
     else if (sp_state & 1)
@@ -1501,15 +1426,6 @@ void WI_Ticker(void)
     // counter for general background animation
     bcnt++;  
 
-    if (bcnt == 1)
-    {
-	// intermission music
-  	if ( gamemode == commercial )
-	  S_ChangeMusic(mus_dm2int, true);
-	else
-	  S_ChangeMusic(mus_inter, true); 
-    }
-
     WI_checkForAccelerate();
 
     switch (state)
@@ -1538,87 +1454,56 @@ void WI_loadData(void)
     char	name[9];
     anim_t*	a;
 
-    if (gamemode == commercial)
-	strcpy(name, "INTERPIC");
-    else 
-	sprintf(name, "WIMAP%d", wbs->epsd);
+    sprintf(name, "WIMAP%d", wbs->epsd);
     
-    if ( gamemode == retail )
-    {
-      if (wbs->epsd == 3)
-	strcpy(name,"INTERPIC");
-    }
+    if (wbs->epsd == 3)
+      strcpy(name,"INTERPIC");
 
     // background
     bg = W_CacheLumpName(name, PU_CACHE);    
     V_DrawPatch(0, 0, 1, bg);
 
 
-    // UNUSED unsigned char *pic = screens[1];
-    // if (gamemode == commercial)
-    // {
-    // darken the background image
-    // while (pic != screens[1] + SCREENHEIGHT*SCREENWIDTH)
-    // {
-    //   *pic = colormaps[256*25 + *pic];
-    //   pic++;
-    // }
-    //}
-
-    if (gamemode == commercial)
-    {
-	NUMCMAPS = 32;								
-	lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * NUMCMAPS,
-				       PU_STATIC, 0);
-	for (i=0 ; i<NUMCMAPS ; i++)
-	{								
-	    sprintf(name, "CWILV%2.2d", i);
-	    lnames[i] = W_CacheLumpName(name, PU_STATIC);
-	}					
-    }
-    else
-    {
-	lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * NUMMAPS,
-				       PU_STATIC, 0);
-	for (i=0 ; i<NUMMAPS ; i++)
-	{
-	    sprintf(name, "WILV%d%d", wbs->epsd, i);
-	    lnames[i] = W_CacheLumpName(name, PU_STATIC);
-	}
-
-	// you are here
-	yah[0] = W_CacheLumpName("WIURH0", PU_STATIC);
-
-	// you are here (alt.)
-	yah[1] = W_CacheLumpName("WIURH1", PU_STATIC);
-
-	// splat
-	splat = W_CacheLumpName("WISPLAT", PU_STATIC); 
-	
-	if (wbs->epsd < 3)
-	{
-	    for (j=0;j<NUMANIMS[wbs->epsd];j++)
-	    {
-		a = &anims[wbs->epsd][j];
-		for (i=0;i<a->nanims;i++)
-		{
-		    // MONDO HACK!
-		    if (wbs->epsd != 1 || j != 8) 
-		    {
-			// animations
-			sprintf(name, "WIA%d%.2d%.2d", wbs->epsd, j, i);  
-			a->p[i] = W_CacheLumpName(name, PU_STATIC);
-		    }
-		    else
-		    {
-			// HACK ALERT!
-			a->p[i] = anims[1][4].p[i]; 
-		    }
-		}
-	    }
-	}
-    }
-
+    lnames = (patch_t **) Z_Malloc(sizeof(patch_t*) * NUMMAPS,
+				   PU_STATIC, 0);
+    for (i=0 ; i<NUMMAPS ; i++)
+      {
+	sprintf(name, "WILV%d%d", wbs->epsd, i);
+	lnames[i] = W_CacheLumpName(name, PU_STATIC);
+      }
+    
+    // you are here
+    yah[0] = W_CacheLumpName("WIURH0", PU_STATIC);
+    
+    // you are here (alt.)
+    yah[1] = W_CacheLumpName("WIURH1", PU_STATIC);
+    
+    // splat
+    splat = W_CacheLumpName("WISPLAT", PU_STATIC); 
+    
+    if (wbs->epsd < 3)
+      {
+	for (j=0;j<NUMANIMS[wbs->epsd];j++)
+	  {
+	    a = &anims[wbs->epsd][j];
+	    for (i=0;i<a->nanims;i++)
+	      {
+		// MONDO HACK!
+		if (wbs->epsd != 1 || j != 8) 
+		  {
+		    // animations
+		    sprintf(name, "WIA%d%.2d%.2d", wbs->epsd, j, i);  
+		    a->p[i] = W_CacheLumpName(name, PU_STATIC);
+		  }
+		else
+		  {
+		    // HACK ALERT!
+		    a->p[i] = anims[1][4].p[i]; 
+		  }
+	      }
+	  }
+      }
+    
     // More hacks on minus sign.
     wiminus = W_CacheLumpName("WIMINUS", PU_STATIC); 
 
@@ -1709,36 +1594,28 @@ void WI_unloadData(void)
     Z_ChangeTag(wiminus, PU_CACHE);
 
     for (i=0 ; i<10 ; i++)
-	Z_ChangeTag(num[i], PU_CACHE);
+      Z_ChangeTag(num[i], PU_CACHE);
     
-    if (gamemode == commercial)
-    {
-  	for (i=0 ; i<NUMCMAPS ; i++)
-	    Z_ChangeTag(lnames[i], PU_CACHE);
-    }
-    else
-    {
-	Z_ChangeTag(yah[0], PU_CACHE);
-	Z_ChangeTag(yah[1], PU_CACHE);
-
-	Z_ChangeTag(splat, PU_CACHE);
-
-	for (i=0 ; i<NUMMAPS ; i++)
-	    Z_ChangeTag(lnames[i], PU_CACHE);
-	
-	if (wbs->epsd < 3)
-	{
-	    for (j=0;j<NUMANIMS[wbs->epsd];j++)
-	    {
-		if (wbs->epsd != 1 || j != 8)
-		    for (i=0;i<anims[wbs->epsd][j].nanims;i++)
-			Z_ChangeTag(anims[wbs->epsd][j].p[i], PU_CACHE);
-	    }
-	}
-    }
+    Z_ChangeTag(yah[0], PU_CACHE);
+    Z_ChangeTag(yah[1], PU_CACHE);
+    
+    Z_ChangeTag(splat, PU_CACHE);
+    
+    for (i=0 ; i<NUMMAPS ; i++)
+      Z_ChangeTag(lnames[i], PU_CACHE);
+    
+    if (wbs->epsd < 3)
+      {
+	for (j=0;j<NUMANIMS[wbs->epsd];j++)
+	  {
+	    if (wbs->epsd != 1 || j != 8)
+	      for (i=0;i<anims[wbs->epsd][j].nanims;i++)
+		Z_ChangeTag(anims[wbs->epsd][j].p[i], PU_CACHE);
+	  }
+      }
     
     Z_Free(lnames);
-
+    
     Z_ChangeTag(percent, PU_CACHE);
     Z_ChangeTag(colon, PU_CACHE);
     Z_ChangeTag(finished, PU_CACHE);
@@ -1795,18 +1672,7 @@ void WI_initVariables(wbstartstruct_t* wbstartstruct)
     wbs = wbstartstruct;
 
 #ifdef RANGECHECKING
-    if (gamemode != commercial)
-    {
-      if ( gamemode == retail )
-	RNGCHECK(wbs->epsd, 0, 3);
-      else
-	RNGCHECK(wbs->epsd, 0, 2);
-    }
-    else
-    {
-	RNGCHECK(wbs->last, 0, 8);
-	RNGCHECK(wbs->next, 0, 8);
-    }
+    RNGCHECK(wbs->epsd, 0, 3);
     RNGCHECK(wbs->pnum, 0, MAXPLAYERS);
     RNGCHECK(wbs->pnum, 0, MAXPLAYERS);
 #endif
@@ -1825,10 +1691,6 @@ void WI_initVariables(wbstartstruct_t* wbstartstruct)
 
     if (!wbs->maxsecret)
 	wbs->maxsecret = 1;
-
-    if ( gamemode != retail )
-      if (wbs->epsd > 2)
-	wbs->epsd -= 3;
 }
 
 void WI_Start(wbstartstruct_t* wbstartstruct)

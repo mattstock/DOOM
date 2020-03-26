@@ -35,7 +35,6 @@ rcsid[] = "$Id: m_bbox.c,v 1.1 1997/02/03 22:45:10 b1 Exp $";
 #include "doomdef.h"
 #include "m_misc.h"
 #include "i_video.h"
-#include "i_sound.h"
 
 #include "d_net.h"
 #include "g_game.h"
@@ -106,8 +105,6 @@ int  I_GetTime (void)
 //
 void I_Init (void)
 {
-    I_InitSound();
-    //  I_InitGraphics();
 }
 
 //
@@ -116,8 +113,6 @@ void I_Init (void)
 void I_Quit (void)
 {
     D_QuitNetGame ();
-    I_ShutdownSound();
-    I_ShutdownMusic();
     M_SaveDefaults ();
     I_ShutdownGraphics();
     exit(0);
