@@ -19,12 +19,9 @@ OBJS=				\
 		$(O)/doomdef.o		\
 		$(O)/doomstat.o		\
 		$(O)/dstrings.o		\
-		$(O)/i_sound.o \
 		$(O)/i_video.o \
 		$(O)/i_net.o \
 		$(O)/i_system.o		\
-		$(O)/i_video.o		\
-		$(O)/i_net.o			\
 		$(O)/tables.o			\
 		$(O)/f_finale.o		\
 		$(O)/f_wipe.o 		\
