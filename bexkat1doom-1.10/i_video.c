@@ -170,7 +170,7 @@ void I_GetEvent(void)
 //
 void I_StartTic (void)
 {
-  while (keyboard_count())
+  while (keyboard_ready())
     I_GetEvent();
 }
 
@@ -244,13 +244,30 @@ void I_InitGraphics(void)
 	return;
     firsttime = 0;
 
-    vga_set_mode(VGA_MODE_DOUBLE);
+    vga_set_mode(VGA_MODE_320x200_COLOR);
     
     X_width = SCREENWIDTH * multiply;
     X_height = SCREENHEIGHT * multiply;
 
-    vga_set_mode(VGA_MODE_DOUBLE);
-    
+    // check for command-line geometry
+    if ( (pnum=M_CheckParm("-geom")) ) // suggest parentheses around assignment
+    {
+	// warning: char format, different type arg 3,5
+	n = sscanf(myargv[pnum+1], "%c%d%c%d", &xsign, &x, &ysign, &y);
+	
+	if (n==2)
+	    x = y = 0;
+	else if (n==6)
+	{
+	    if (xsign == '-')
+		x = -x;
+	    if (ysign == '-')
+		y = -y;
+	}
+	else
+	    I_Error("bad -geom parameter");
+    }
+
     screens[0] = (unsigned char *)malloc(SCREENWIDTH*SCREENHEIGHT);
 }
 
