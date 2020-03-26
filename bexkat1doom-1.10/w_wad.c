@@ -63,7 +63,8 @@ int			numlumps;
 
 void**			lumpcache;
 
-#define strcmpi strcasecmp
+
+#define strcmpi	strcasecmp
 
 int filelength (int handle) 
 { 
